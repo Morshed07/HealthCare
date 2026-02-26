@@ -155,11 +155,13 @@ AUTH_USER_MODEL = 'account.User'
 # =========================
 
 STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-
 
 # =========================
 # Rest Framework Configuration
