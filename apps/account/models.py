@@ -5,8 +5,14 @@ from django.contrib.auth.models import (
     PermissionsMixin
 )
 from django.utils import timezone
+from datetime import timedelta
 import random
 from apps.core.models import BaseModel
+
+
+def user_image_upload_path(instance, filename):
+    user_email = instance.email.replace("@", "_")
+    return f"{user_email}/profile_image/{filename}"
 
 
 class UserManager(BaseUserManager):
@@ -31,7 +37,12 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    avatar = models.ImageField(upload_to=user_image_upload_path, null=True, blank=True)
     representative_code = models.CharField(max_length=20)
+
+    job_title = models.CharField(max_length=100, null=True, blank=True)
+    department = models.CharField(max_length=100, null=True, blank=True)
+    mobile_number = models.CharField(max_length=20, null=True, blank=True)
 
     is_verified = models.BooleanField(default=True)
 
@@ -50,16 +61,35 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
 
 class EmailOTP(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now=True)
 
-    def is_expired(self):
-        return timezone.now() > self.created_at + timezone.timedelta(minutes=10)
+    resend_after = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    def generate_otp(self, length=6, resend_seconds=30, expire_minutes=10):
+        code = ''.join(str(random.randint(0, 9)) for _ in range(length))
+        
+        now = timezone.now()
+        self.otp = code
+        self.created_at = now
+        self.resend_after = now + timedelta(seconds=resend_seconds)
+        self.expires_at = now + timedelta(minutes=expire_minutes)
+
+        self.save(update_fields=['otp', 'created_at', 'resend_after', 'expires_at'])
+        return code
+
+    def otp_is_valid(self):
+        if not self.otp or not self.expires_at:
+            return False
+        return timezone.now() <= self.expires_at
 
     def can_resend(self):
-        return timezone.now() > self.created_at + timezone.timedelta(seconds=60)
+        if not self.resend_after:
+            return True
+        return timezone.now() >= self.resend_after
 
-    def generate_otp(self):
-        self.otp = str(random.randint(100000, 999999))
-        self.save()
+    def __str__(self):
+        return f"OTP for {self.user.email} at {self.created_at}"
+

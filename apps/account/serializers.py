@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from django.utils import timezone
+from django.forms import ValidationError
 from .models import (
     User,
     EmailOTP
@@ -40,7 +41,8 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "representative",
-            "is_verified"
+            "is_verified",
+            "is_active"
         )
         read_only_fields = ("id", "is_verified")
 
@@ -97,6 +99,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             last_name=validated_data.get('last_name'),
             representative_code=validated_data.get('representative_code'),
             is_verified=False,
+            is_active=False
         )
         send_registration_otp_email(user)
         return user
@@ -121,14 +124,19 @@ class VerifyOTPSerializer(serializers.Serializer):
         if not otp_obj or otp_obj.otp != otp:
             raise serializers.ValidationError("Invalid OTP.")
 
-        if otp_obj.is_expired():
-            raise serializers.ValidationError("OTP has expired. Please request a new one.")
+        # if otp_obj.is_expired():
+        #     raise serializers.ValidationError("OTP has expired. Please request a new one.")
 
         # If we reach here, OTP is valid
         user.is_verified = True
+        user.is_active = True
         user.save()
+
+        # CLEAR THE OTP HERE
+        otp_obj.delete()
+
         return attrs
-    
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -160,6 +168,153 @@ class LoginSerializer(serializers.Serializer):
 
         # Return the user and tokens so the View can use them
         return {
+            'success': True,
+            'message': "User loged in successfully",
             'tokens': tokens,
             'user': user
         }
+
+
+class ForgotPasswordRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            self.user = User.objects.get(email=value, is_active=True)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User not found.")
+        return value
+
+    def save(self):
+        try:
+            send_forgot_password_otp_email(self.user)
+        except ValidationError as e:
+            raise serializers.ValidationError(str(e))
+
+        return {"message": "OTP sent successfully"}
+
+
+class ForgotPasswordVerifyOtpSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+
+    def validate(self, attrs):
+        email = attrs["email"]
+        otp = attrs["otp"]
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid email.")
+
+        otp_log = (
+            EmailOTP.objects
+            .filter(user=user, otp=otp)
+            .order_by("-created_at")
+            .first()
+        )
+
+        if not otp_log:
+            raise serializers.ValidationError("Invalid OTP.")
+
+        if not otp_log.otp_is_valid():
+            raise serializers.ValidationError("OTP expired.")
+
+        return attrs
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=6)
+    new_password = serializers.CharField(
+        min_length=8,
+        write_only=True
+    )
+    confirm_password = serializers.CharField(
+        min_length=8,
+        write_only=True
+    )
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        otp = attrs.get("otp")
+        new_password = attrs.get("new_password")
+        confirm_password = attrs.get("confirm_password")
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError({
+                "confirm_password": "Passwords do not match."
+            })
+
+        try:
+            self.user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Invalid email.")
+
+        otp_log = (
+            EmailOTP.objects
+            .filter(user=self.user, otp=otp)
+            .order_by("-created_at")
+            .first()
+        )
+
+        if not otp_log:
+            raise serializers.ValidationError("Invalid OTP.")
+
+        if not otp_log.otp_is_valid():
+            raise serializers.ValidationError("OTP expired.")
+
+        return attrs
+
+    def save(self):
+        self.user.set_password(self.validated_data["new_password"])
+        self.user.save(update_fields=["password"])
+
+        EmailOTP.objects.filter(user=self.user).delete()
+
+        return {
+            "message": "Password reset successful"
+        }
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        current_password = attrs.get("current_password")
+        new_password = attrs.get("new_password")
+        confirm_password = attrs.get("confirm_password")
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError({
+                "confirm_password": "Passwords do not match."
+            })
+
+        if not self.context["request"].user.check_password(current_password):
+            raise serializers.ValidationError({
+                "current_password": "Incorrect current password."
+            })
+
+        return attrs
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        user.set_password(validated_data["new_password"])
+        user.save(update_fields=["password"])
+        return validated_data
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "avatar",
+            "mobile_number",
+            "is_active",
+            "department",
+            "job_title"
+        )

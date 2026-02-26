@@ -17,51 +17,42 @@ def get_tokens_for_user(user):
     }
 
 
-def send_registration_otp_email(user: User):
-    # Get existing OTP object or create new one
+def _send_otp_email(user: User, subject: str):
+    """
+    Generic function to send OTP emails with resend rate limiting.
+    Gets or creates OTP, checks rate limit, generates OTP, and sends email.
+    """
     otp_obj, created = EmailOTP.objects.get_or_create(user=user)
-
+    
+    # If existing OTP and can't resend yet, raise error
     if not created and not otp_obj.can_resend():
         raise ValidationError("Please wait 1 minute before requesting a new OTP.")
-    # Generate new OTP
-    otp_code = otp_obj.generate_otp()   # assuming this sets self.otp
-    otp_obj.save()
-
+    
+    # Generate new OTP (this also saves it)
+    otp_obj.generate_otp()
+    
     html_message = render_to_string(
         'email/otp_email.html',
         {'otp': otp_obj.otp, 'user': user}
     )
-
+    
     email = EmailMessage(
-        subject='Your One-Time Password for Registration',
+        subject=subject,
         body=html_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[user.email]
     )
     email.content_subtype = 'html'
     return email.send()
+
+
+def send_registration_otp_email(user: User):
+    """Send OTP email for user registration"""
+    return _send_otp_email(user, subject='Your One-Time Password for Registration')
 
 
 def send_forgot_password_otp_email(user: User):
-    otp_obj, created = EmailOTP.objects.get_or_create(user=user)
-    
-    if not created and not otp_obj.can_resend():
-        raise ValidationError("Please wait 1 minute before requesting a new OTP.")
-    # Generate new OTP
-    otp_code = otp_obj.generate_otp()   # assuming this sets self.otp
-    otp_obj.save()
+    """Send OTP email for password reset"""
+    return _send_otp_email(user, subject='You requested a password reset OTP')
 
-    html_message = render_to_string(
-        'email/otp_email.html',
-        {'otp': otp_obj.otp, 'user': user}
-    )
-
-    email = EmailMessage(
-        subject='You requested a password reset OTP',
-        body=html_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[user.email]
-    )
-    email.content_subtype = 'html'
-    return email.send()
 
