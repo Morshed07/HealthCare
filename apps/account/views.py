@@ -18,7 +18,6 @@ from .utils import (
     send_registration_otp_email
 )
 from django.contrib.auth import get_user_model
-from django.utils.timezone import now
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.models import update_last_login
