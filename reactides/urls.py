@@ -8,6 +8,9 @@ urlpatterns = [
     path('api/', include('apps.core.urls')),
     path('api/account/', include('apps.account.urls')),
     path('api/representative/', include('apps.representative.urls')),
+    path('api/products/', include('apps.product.urls')),
+    path('api/cart/', include('apps.cart.urls')),
+    
 
 
 
