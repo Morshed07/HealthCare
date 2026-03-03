@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import (
@@ -11,7 +12,8 @@ from .serializers import (
     ForgotPasswordVerifyOtpSerializer,
     ResetPasswordSerializer,
     ChangePasswordSerializer,
-    ProfileUpdateSerializer
+    ProfileUpdateSerializer,
+    ShippingAddressSerializer
 
 )
 from .utils import (
@@ -21,7 +23,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.models import update_last_login
-
+from .models import ShippingAddress
 User = get_user_model()
 
 
@@ -212,5 +214,56 @@ class ProfileUpdateView(APIView):
             return Response({
                 "success": True,
                 "message": "Profile updated successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+
+
+class ShippingAddressView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            shipping_address = ShippingAddress.objects.get(user=request.user)
+            serializer = ShippingAddressSerializer(shipping_address)
+            return Response({
+                "success": True,
+                "message": "Shipping address fetched successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except ShippingAddress.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "No shipping address found for this user"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        serializer = ShippingAddressSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user)
+            return Response({
+                "success": True,
+                "message": "Shipping address created successfully",
+                "data": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        
+    def patch(self, request):
+        try:
+            shipping_address = ShippingAddress.objects.get(user=request.user)
+        except ShippingAddress.DoesNotExist:
+            return Response({
+                "success": False,
+                "message": "No shipping address found for this user"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ShippingAddressSerializer(
+            shipping_address,
+            data=request.data,
+            partial=True
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({
+                "success": True,
+                "message": "Shipping address updated successfully",
                 "data": serializer.data
             }, status=status.HTTP_200_OK)

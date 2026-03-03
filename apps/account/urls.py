@@ -8,7 +8,8 @@ from .views import (
     ResetPasswordView,
     UserMeView,
     ChangePasswordView,
-    ProfileUpdateView
+    ProfileUpdateView,
+    ShippingAddressView
 
 
 )
@@ -26,5 +27,7 @@ urlpatterns = [
 
     path('auth/user/me/', UserMeView.as_view(), name='user-profile'),
     path('auth/user/update-profile/', ProfileUpdateView.as_view(), name='update-profile'),
+
+    path('user/shipping-address/', ShippingAddressView.as_view(), name='shipping-address'),
 
 ]

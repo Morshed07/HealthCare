@@ -9,7 +9,10 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "title",
-            "short_description"
+            "short_description",
+            "dosage_strength",
+            "dosage_unit",
+            "thumbnail",
         ]
 
 

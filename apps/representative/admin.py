@@ -7,7 +7,9 @@ from .models import Representative
 
 @admin.register(Representative)
 class RepresentativeAdmin(ModelAdmin):
-    list_display = ('name', 'email', 'phone_number', 'company', 'designation', 'representative_code', 'is_active', 'created_at')
+    list_display = ('name', 'picture', 'email', 'phone_number', 'company', 'designation', 'representative_code', 'is_active', 'created_at')
     search_fields = ('name', 'email', 'phone_number', 'company', 'designation', 'representative_code')
     list_filter = ('is_active', 'created_at')
     ordering = ('-created_at',)
+
+    list_per_page = 20
