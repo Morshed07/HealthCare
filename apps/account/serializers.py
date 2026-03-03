@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from django.utils import timezone
 from django.forms import ValidationError
 from .models import (
     User,
-    EmailOTP
+    EmailOTP,
+    ShippingAddress
 )
 from .utils import (
     send_registration_otp_email,
@@ -32,6 +32,7 @@ class RepresentativeSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     representative = RepresentativeSerializer(read_only=True)
+    shipping_address = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -42,9 +43,16 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "representative",
             "is_verified",
-            "is_active"
+            "is_active",
+            "shipping_address"
         )
         read_only_fields = ("id", "is_verified")
+
+    def get_shipping_address(self, obj):
+        shipping_address = ShippingAddress.objects.filter(user=obj).first()
+        if shipping_address:
+            return ShippingAddressSerializer(shipping_address).data
+        return None
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -318,3 +326,17 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             "department",
             "job_title"
         )
+
+
+class ShippingAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = (
+            "id",
+            "facility_name",
+            "address",
+            "city",
+            "state",
+            "zip_code"
+        )
+        read_only_fields = ("id", "user")

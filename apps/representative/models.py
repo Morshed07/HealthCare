@@ -1,6 +1,6 @@
 from django.db import models
 from apps.core.models import BaseModel
-
+from django.utils.safestring import mark_safe
 
 # Create your models here.
 
@@ -9,6 +9,7 @@ class Representative(BaseModel):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, unique=True)
+    avatar = models.ImageField(upload_to='representatives/avatars/', blank=True, null=True)
     company = models.CharField(max_length=255)
     designation = models.CharField(max_length=255)
     representative_code = models.CharField(max_length=20, unique=True)
@@ -34,3 +35,6 @@ class Representative(BaseModel):
 
         db_table = "representatives"
         ordering = ["-created_at"]
+
+    def picture(self):
+        return mark_safe('<img src="/media/%s" width = "80" height = "80" />' % (self.avatar))

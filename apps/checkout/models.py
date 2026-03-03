@@ -1,3 +1,116 @@
 from django.db import models
+from apps.core.models import BaseModel
+from decimal import Decimal
+import datetime
+from apps.product.models import Product
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+User = get_user_model()
+
+# Choices
+ORDER_STATUS = (
+    ('Placed', 'Placed'),
+    ('Processing', 'Processing'),
+    ('Shipped', 'Shipped'),
+    ('Delivered', 'Delivered'),
+    ('Canceled', 'Canceled')
+)
+
+PAYMENT_METHOD = (
+    ('Cash on Delivery', 'Cash on Delivery'),
+    ('Bank Transfer', 'Bank Transfer'),
+    ('Zelle Payment', 'Zelle Payment')
+)
+
+
+class Order(models.Model):
+    order_id = models.CharField(max_length=20, unique=True, editable=False)
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    facility_name = models.CharField(max_length=250)
+    contact_person = models.CharField(max_length=250)
+    email = models.EmailField(max_length=150)
+    mobile_number = models.CharField(max_length=14)
+    address = models.TextField()
+    city = models.CharField(max_length=150, blank=True, null=True)
+    state = models.CharField(max_length=150, blank=True, null=True)
+    zip_code = models.CharField(max_length=150, blank=True, null=True)
+    payment_method = models.CharField(max_length=150, choices=PAYMENT_METHOD)
+
+    shipping_charge = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=250, choices=ORDER_STATUS, default='Placed')
+
+    paid = models.BooleanField(default=False)
+    sub_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name_plural = 'Orders'
+
+    def save(self, *args, **kwargs):
+        # 1. Generate Custom Order ID (e.g., ORD-2024-0001)
+        if not self.order_id:
+            year = datetime.date.today().year
+            order_count = Order.objects.filter(created_at__year=year).count() + 1
+            self.order_id = f"ORD-{year}-{str(order_count).zfill(4)}"
+
+        # # 2. Track Status History
+        # if self.pk:
+        #     original = Order.objects.get(pk=self.pk)
+        #     if original.status != self.status:
+        #         OrderStatusHistory.objects.create(
+        #             order=self,
+        #             status=self.status
+        #         )
+        
+        super(Order, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.order_id} - {self.facility_name}"
+
+
+class OrderItem(BaseModel):
+    order = models.ForeignKey(Order, related_name='orderitems', on_delete=models.CASCADE)
+    crosscheck_id = models.CharField(max_length=20, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    dosage_strength = models.CharField(max_length=50)
+    dosage_unit = models.CharField(max_length=50)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def total_price(self):
+        if self.price is None or self.quantity is None:
+            return 0
+        return self.price * self.quantity
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Order Item'
+        verbose_name_plural = 'Order Items'
+
+    def save(self, *args, **kwargs):
+        # Sync the readable order_id to the item for easier cross-referencing
+        self.crosscheck_id = self.order.order_id
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.product.title} (x{self.quantity})"
+
+
+class OrderStatusHistory(BaseModel):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='status_history')
+    status = models.CharField(max_length=250, choices=ORDER_STATUS)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['updated_at']
+
+    def __str__(self):
+        return f"{self.order.order_id} changed to {self.status}"
