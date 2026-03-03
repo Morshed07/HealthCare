@@ -1,0 +1,32 @@
+# --- Python / Django ---
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+db.sqlite3
+media/
+static_root/
+/venv/
+.venv/
+env/
+
+# --- Node / React ---
+node_modules/
+/build
+.eslintcache
+.stylelintcache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- IDEs / Editors ---
+.vscode/
+.idea/
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
+
+# --- Unfold / Static ---
+# Avoid committing collected static files if you use 'collectstatic' locally
+staticfiles/
