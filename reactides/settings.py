@@ -38,7 +38,9 @@ CORS_ALLOWED_ORIGINS = env(
 # Application definition
 
 INSTALLED_APPS = [
+    "apps.unfold_admin",
     'unfold',
+    # 'apps.unfold_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,7 +84,7 @@ ROOT_URLCONF = 'reactides.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -162,7 +164,7 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
@@ -211,4 +213,185 @@ DEFAULT_FROM_EMAIL = env(
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=60),
+}
+
+
+
+
+# =======================
+# Unfold Configuration
+# =======================
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD = {
+    # 'APP_NAME': 'Reactides',
+    # 'APP_VERSION': '1.0.0',
+    # 'APP_LOGO_URL': static('images/logo.png'),
+    # 'APP_FAVICON_URL': static('images/favicon.ico'),
+    # 'APP_DESCRIPTION': _('A modern e-commerce platform built with Django and React.'),
+    # 'APP_AUTHOR': _('Morshed Nayeem'),
+    # 'APP_AUTHOR_EMAIL': env("AUTHOR_EMAIL", default="morshed.nayeem@example.com")
+    
+    "SITE_TITLE": "Reactides Admin",
+    "SITE_HEADER": "Reactides",
+    "SITE_SUBHEADER": "Admin Dashboard",
+    # "SITE_LOGO": {
+    #     "light": lambda request: static("admin/react.svg"),  # Path to your file
+    #     "dark": lambda request: static("admin/react.svg"),   # Use same or different for dark mode
+    # },
+    # "SITE_SYMBOL": "speed",
+    # Update this path to include the 'apps' prefix
+    "DASHBOARD_CALLBACK": "apps.unfold_admin.dashboard.dashboard_callback",
+    
+    # Also update any other callbacks or links (Environment, Sidebar, etc.)
+    "ENVIRONMENT": "apps.unfold_admin.dashboard.environment_callback",
+    
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+            # --- ADDED THIS DASHBOARD SECTION ---
+            {
+                "title": "Navigation",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Dashboard",
+                        "icon": "dashboard", 
+                        "link": reverse_lazy("admin:index"),
+                    },
+                ],
+            },
+            # ------------------------------------
+            {
+                "title": "Account",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Users",
+                        "icon": "group", 
+                        "link": reverse_lazy("admin:account_user_changelist"),
+                    },
+                    {
+                        "title": "Shipping Addresses",
+                        "icon": "local_shipping",
+                        "link": reverse_lazy("admin:account_shippingaddress_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Representative",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Representatives",
+                        "icon": "badge",
+                        "link": reverse_lazy("admin:representative_representative_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Product",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Products",
+                        "icon": "inventory_2",
+                        "link": reverse_lazy("admin:product_product_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Cart",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Carts",
+                        "icon": "shopping_cart",
+                        "link": reverse_lazy("admin:cart_cart_changelist"),
+                    },
+                    {
+                        "title": "Cart Items",
+                        "icon": "shopping_basket",
+                        "link": reverse_lazy("admin:cart_cartitem_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Checkout",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Orders",
+                        "icon": "receipt_long",
+                        "link": reverse_lazy("admin:checkout_order_changelist"),
+                    },
+                    {
+                        "title": "Order Items",
+                        "icon": "list_alt",
+                        "link": reverse_lazy("admin:checkout_orderitem_changelist"),
+                    },
+                ],
+            },
+        ],
+    },
+    "COLORS": {
+        "primary": {
+            "50": "240 251 249",
+            "100": "209 244 237",
+            "200": "163 232 220",
+            "300": "110 213 197",
+            "400": "63 186 168",
+            "500": "34 158 142",
+            "600": "8 120 112",   # <--- Your exact color (#087870)
+            "700": "12 96 90",
+            "800": "13 77 73",
+            "900": "14 64 61",
+            "950": "4 38 36",
+        },
+    },
+    #     "primary": {
+    #             "50": "238 242 255",
+    #             "100": "224 231 255",
+    #             "200": "199 210 254",
+    #             "300": "165 180 252",
+    #             "400": "129 140 248",
+    #             "500": "99 102 241",
+    #             "600": "79 70 229",  # Base Indigo
+    #             "700": "67 56 202",
+    #             "800": "55 48 163",
+    #             "900": "49 46 129",
+    #             "950": "30 27 75",
+    #         },
+    # },
+    #     "primary": {
+    #             "50": "245 243 255",
+    #             "100": "237 233 254",
+    #             "200": "221 214 254",
+    #             "300": "196 181 253",
+    #             "400": "167 139 250",
+    #             "500": "139 92 246",  # Base Violet
+    #             "600": "124 58 237",
+    #             "700": "109 40 217",
+    #             "800": "91 33 182",
+    #             "900": "76 29 149",
+    #             "950": "46 16 101",
+    #         },
+    # }
+        # "primary": {
+        #         "50": "255 247 237",
+        #         "100": "255 237 213",
+        #         "200": "254 215 170",
+        #         "300": "253 186 116",
+        #         "400": "251 146 60",
+        #         "500": "249 115 22",   # Base Orange
+        #         "600": "234 88 12",
+        #         "700": "194 65 12",
+        #         "800": "154 52 18",
+        #         "900": "124 45 18",
+        #         "950": "67 20 7",
+        #     },
+        # },
 }
