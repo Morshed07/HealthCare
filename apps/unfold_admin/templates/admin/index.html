@@ -1,0 +1,180 @@
+{% extends "unfold/layouts/base.html" %}
+{% load unfold %}
+
+{% block header %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Fix for chart height */
+    .chart-wrapper canvas {
+        height: 450px !important; 
+        max-height: 450px !important;
+        width: 100% !important;
+    }
+
+    /* Total removal of the Unfold top bar */
+    header, #header-inner, .z-40.border-b.mb-6.px-4 {
+        display: none !important;
+    }
+
+    /* Add some spacing since the header is gone */
+    .dashboard-container {
+        padding-top: 2rem;
+    }
+</style>
+
+<div class="flex flex-col gap-8 px-6 pb-10 dashboard-container">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        {% component "unfold/components/card.html" with title="Monthly Revenue" label=total_revenue %}
+            <span class="{{ revenue_color }} text-sm font-medium mt-2 block">
+                {{ revenue_pct }}
+            </span>
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title="Total Products" label=total_products %}
+            <span class="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2 block">
+                Active in inventory
+            </span>
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title="Total Representatives" label=total_representatives %}
+            <span class="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2 block">
+                Registered representatives
+            </span>
+        {% endcomponent %}
+
+        {% component "unfold/components/card.html" with title="Total Users" label=total_users %}
+            <span class="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2 block">
+                Registered customers
+            </span>
+        {% endcomponent %}
+
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+        <div class="xl:col-span-2">
+            {% component "unfold/components/card.html" with title="Order Performance (Annual)" %}
+                <div class="mt-4 w-full chart-wrapper">
+                    {% component "unfold/components/chart/line.html" with data=line_chart_data %}
+                    {% endcomponent %}
+                </div>
+            {% endcomponent %}
+        </div>
+
+        <div>
+            {% component "unfold/components/card.html" with title="Daily Orders (Last 7 Days)" %}
+                <div class="mt-4 w-full chart-wrapper">
+                    {% component "unfold/components/chart/bar.html" with data=bar_chart_data %}
+                    {% endcomponent %}
+                </div>
+            {% endcomponent %}
+        </div>
+
+    </div>
+
+    {% component "unfold/components/card.html" with title="Recent Orders" %}
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full text-left text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+
+                <thead class="text-xs uppercase bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    <tr>
+                        <th class="px-4 py-3">Order ID</th>
+                        <th class="px-4 py-3">Customer</th>
+                        <th class="px-4 py-3">Email</th>
+                        <th class="px-4 py-3">Payment</th>
+                        <th class="px-4 py-3">Address</th>
+                        <th class="px-4 py-3">Paid</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Total Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in recent_orders %}
+                    <tr class="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition">
+
+                        <td class="px-4 py-4 font-medium">
+                            <a href="{% url 'admin:checkout_order_change' order.id %}" class="text-primary-600 hover:text-primary-800 hover:underline dark:text-primary-500 dark:hover:text-primary-400 transition-colors">
+                                #&nbsp;{{ order.order_id|default:order.id }}
+                            </a>
+                        </td>
+
+                        <td class="px-4 py-4">
+                            {{ order.user.first_name }} {{ order.user.last_name |default:order.user.first_name|default:"Guest" }}
+                        </td>
+
+                        <td class="px-4 py-4">
+                            {{ order.user.email|default:"-" }}
+                        </td>
+
+                        <td class="px-4 py-4 capitalize">
+                            {{ order.payment_method|default:"Cash On Delivery" }}
+                        </td>
+
+                        <td class="px-4 py-4 max-w-[200px] truncate" title="{{ order.address }}">
+                            {{ order.address|default:"-" }}
+                        </td>
+
+                        <td class="px-4 py-4">
+                            {% if order.paid %}
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-green-600">
+                                    Yes
+                                </span>
+                            {% else %}
+                                <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-red-600">
+                                    No
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-4 py-4">
+                            {% if order.status == 'Delivered' %}
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-green-600">
+                                    {{ order.status }}
+                                </span>
+                            
+                            {% elif order.status == 'Processing' %}
+                                <span class="bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-amber-600">
+                                    {{ order.status }}
+                                </span>
+                            
+                            {% elif order.status == 'Shipped' %}
+                                <span class="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-blue-600">
+                                    {{ order.status }}
+                                </span>
+                            
+                            {% elif order.status == 'Canceled' %}
+                                <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-red-600">
+                                    {{ order.status }}
+                                </span>
+                            
+                            {% else %}
+                                <span class="bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded uppercase tracking-wider dark:bg-orange-600">
+                                    {{ order.status|default:"Placed" }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-4 py-4 font-semibold text-gray-900 dark:text-white">
+                            ${{ order.total }}
+                        </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">
+                            No recent orders found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+    {% endcomponent %}
+
+</div>
+{% endblock %}
