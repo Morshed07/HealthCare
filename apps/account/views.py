@@ -23,6 +23,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.contrib.auth.models import update_last_login
+from django.forms import ValidationError
 from .models import ShippingAddress
 User = get_user_model()
 
@@ -42,11 +43,16 @@ class RegisterView(APIView):
                     email = request.data.get('email')
                     user = User.objects.get(email=email)
 
-                    send_registration_otp_email(user)
+                    try:
+                        send_registration_otp_email(user)
+                    except ValidationError as e:
+                        return Response({
+                            "success": False,
+                            "message": str(e.message) if hasattr(e, 'message') else str(e)
+                        }, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
                     return Response({
                         "message": "Account already exists but is not verified. A new OTP has been sent.",
-                        "action": "REDIRECT_TO_VERIFY",
                         "email": email
                     }, status=status.HTTP_200_OK)
 
