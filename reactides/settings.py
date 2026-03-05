@@ -1,6 +1,7 @@
 from pathlib import Path
 import environ
 from datetime import timedelta
+from django.urls import reverse_lazy
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,7 +41,6 @@ CORS_ALLOWED_ORIGINS = env(
 INSTALLED_APPS = [
     "apps.unfold_admin",
     'unfold',
-    # 'apps.unfold_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,6 +69,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise for serving static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -168,9 +169,9 @@ STORAGES = {
     },
 }
 
-# =========================
+# ==============================
 # Rest Framework Configuration
-# =========================
+# ==============================
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -216,24 +217,11 @@ SIMPLE_JWT = {
 }
 
 
-
-
 # =======================
 # Unfold Configuration
 # =======================
-from django.templatetags.static import static
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 
 UNFOLD = {
-    # 'APP_NAME': 'Reactides',
-    # 'APP_VERSION': '1.0.0',
-    # 'APP_LOGO_URL': static('images/logo.png'),
-    # 'APP_FAVICON_URL': static('images/favicon.ico'),
-    # 'APP_DESCRIPTION': _('A modern e-commerce platform built with Django and React.'),
-    # 'APP_AUTHOR': _('Morshed Nayeem'),
-    # 'APP_AUTHOR_EMAIL': env("AUTHOR_EMAIL", default="morshed.nayeem@example.com")
-    
     "SITE_TITLE": "Reactides Admin",
     "SITE_HEADER": "Reactides",
     "SITE_SUBHEADER": "Admin Dashboard",
@@ -345,7 +333,7 @@ UNFOLD = {
             "300": "110 213 197",
             "400": "63 186 168",
             "500": "34 158 142",
-            "600": "8 120 112",   # <--- Your exact color (#087870)
+            "600": "8 120 112",  
             "700": "12 96 90",
             "800": "13 77 73",
             "900": "14 64 61",

@@ -4,6 +4,7 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin
 )
+from django.utils.safestring import mark_safe
 from django.utils import timezone
 from datetime import timedelta
 import random
@@ -58,6 +59,9 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
 
     def __str__(self):
         return self.email
+    
+    def thumbnail(self):
+        return mark_safe('<img src="/media/%s" width = "50" height = "50" />' % (self.avatar))
 
 
 class EmailOTP(models.Model):
@@ -92,6 +96,7 @@ class EmailOTP(models.Model):
 
     def __str__(self):
         return f"OTP for {self.user.email} at {self.created_at}"
+    
 
 
 class ShippingAddress(BaseModel):
