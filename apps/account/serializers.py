@@ -22,6 +22,7 @@ class RepresentativeSerializer(serializers.ModelSerializer):
             "name",
             "email",
             "phone_number",
+            "avatar",
             "company",
             "designation",
             "representative_code",
