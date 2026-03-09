@@ -53,6 +53,7 @@ class RegisterView(APIView):
 
                     return Response({
                         "message": "Account already exists but is not verified. A new OTP has been sent.",
+                        "action": "REDIRECT_TO_VERIFY",
                         "email": email
                     }, status=status.HTTP_200_OK)
 
@@ -179,7 +180,7 @@ class UserMeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(request.user , context={'request': request})
 
         return Response({
             "success": True,
