@@ -50,7 +50,8 @@ class UserSerializer(serializers.ModelSerializer):
             "job_title",
             "is_verified",
             "is_active",
-            "shipping_address"
+            "shipping_address",
+            "created_at"
         )
         read_only_fields = ("id", "is_verified")
 
