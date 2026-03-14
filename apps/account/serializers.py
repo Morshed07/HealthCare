@@ -22,6 +22,7 @@ class RepresentativeSerializer(serializers.ModelSerializer):
             "name",
             "email",
             "phone_number",
+            "avatar",
             "company",
             "designation",
             "representative_code",
@@ -31,7 +32,7 @@ class RepresentativeSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    representative = RepresentativeSerializer(read_only=True)
+    representative = serializers.SerializerMethodField()
     shipping_address = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,10 +42,16 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "avatar",
+            "mobile_number",
             "representative",
+            "representative_code",
+            "department",
+            "job_title",
             "is_verified",
             "is_active",
-            "shipping_address"
+            "shipping_address",
+            "created_at",
         )
         read_only_fields = ("id", "is_verified")
 
@@ -52,6 +59,18 @@ class UserSerializer(serializers.ModelSerializer):
         shipping_address = ShippingAddress.objects.filter(user=obj).first()
         if shipping_address:
             return ShippingAddressSerializer(shipping_address).data
+        return None
+    
+    def get_representative(self, obj):
+        if obj.representative_code:
+            representative = Representative.objects.filter(
+                representative_code=obj.representative_code
+            ).first()
+            if representative:
+                return RepresentativeSerializer(
+                    representative,
+                    context=self.context
+                ).data
         return None
 
 

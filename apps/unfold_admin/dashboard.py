@@ -37,7 +37,7 @@ def dashboard_callback(request, context):
     # Overalls
     # total_orders = Order.objects.count()
     total_products = Product.objects.count()
-    total_users = User.objects.count()
+    total_users = User.objects.filter(is_active=True, is_verified=True).count()
     total_representatives = Representative.objects.count()
 
     # ==========================================

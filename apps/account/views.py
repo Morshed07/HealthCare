@@ -180,7 +180,7 @@ class UserMeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserSerializer(request.user , context={'request': request})
 
         return Response({
             "success": True,

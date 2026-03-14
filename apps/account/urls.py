@@ -14,11 +14,17 @@ from .views import (
 
 )
 
+from rest_framework_simplejwt.views import (
+    TokenRefreshView
+)
+
 
 urlpatterns = [
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
     path('auth/login/', LoginView.as_view(), name='login'),
+    # refresh token
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     path('auth/forgot-password/', ForgotPasswordView.as_view(), name='forgot-password'),
     path('auth/forgot-password/verify-otp/', ForgotPasswordVerifyOtpView.as_view(), name='forgot-password-verify-otp'),

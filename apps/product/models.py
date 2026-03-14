@@ -20,6 +20,7 @@ class Product(BaseModel):
     thumbnail = models.ImageField(upload_to='products/', blank=True, null=True)
     quantity = models.PositiveIntegerField(default=0)
     in_stock = models.BooleanField(default=True)
+    information_pdf = models.FileField(upload_to='product_info_pdfs/', blank=True, null=True)
 
     def __str__(self):
         return self.title
