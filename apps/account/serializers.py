@@ -109,7 +109,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             is_verified=False,
             is_active=False
         )
-        send_registration_otp_email(user)
+        try:
+            send_registration_otp_email(user)
+        except ValidationError as e:
+            # If OTP sending fails, we still want to return the user
+            # The frontend can handle retry logic
+            pass
         return user
 
 
