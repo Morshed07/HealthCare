@@ -61,17 +61,6 @@ class UserSerializer(serializers.ModelSerializer):
             return ShippingAddressSerializer(shipping_address).data
         return None
     
-    def get_representative(self, obj):
-        if obj.representative_code:
-            representative = Representative.objects.filter(
-                representative_code=obj.representative_code
-            ).first()
-            if representative:
-                return RepresentativeSerializer(
-                    representative,
-                    context=self.context
-                ).data
-        return None
 
     def get_representative(self, obj):
         if obj.representative_code:
