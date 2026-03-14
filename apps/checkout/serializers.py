@@ -51,6 +51,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "shipping_charge",
             "sub_total",
             "total",
+            "tax_amount",
             "status",
             'created_at',
             'updated_at',
@@ -122,6 +123,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             user=user,
             sub_total=subtotal,
             total=total,
+            tax_amount=tax,
             **validated_data
         )
 

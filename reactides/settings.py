@@ -2,6 +2,7 @@ from pathlib import Path
 import environ
 from datetime import timedelta
 from django.urls import reverse_lazy
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,7 +36,6 @@ CORS_ALLOWED_ORIGINS = env(
     'CORS_ALLOWED_ORIGINS',
 ).split(',')
 
-from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "ngrok-skip-browser-warning",
@@ -105,7 +105,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'reactides.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases

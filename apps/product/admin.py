@@ -11,7 +11,7 @@ class ProductAdmin(ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')
     fieldsets = (
         (None, {
-            'fields': ('title', 'slug', 'thumbnail', 'short_description', 'dosage_strength', 'dosage_unit', 'price', 'quantity', 'in_stock')
+            'fields': ('title', 'slug', 'thumbnail', 'short_description', 'dosage_strength', 'dosage_unit', 'price', 'quantity', 'information_pdf', 'in_stock')
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at')

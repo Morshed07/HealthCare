@@ -53,13 +53,14 @@ class UserSerializer(serializers.ModelSerializer):
             "shipping_address",
             "created_at"
         )
-        read_only_fields = ("id", "is_verified")
+        read_only_fields = ("id", "is_verified", "created_at")
 
     def get_shipping_address(self, obj):
         shipping_address = ShippingAddress.objects.filter(user=obj).first()
         if shipping_address:
             return ShippingAddressSerializer(shipping_address).data
         return None
+    
 
     def get_representative(self, obj):
         if obj.representative_code:

@@ -13,6 +13,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "dosage_strength",
             "dosage_unit",
             "thumbnail",
+            "quantity"
         ]
 
 

@@ -17,9 +17,9 @@ ORDER_STATUS = (
 )
 
 PAYMENT_METHOD = (
-    ('Cash on Delivery', 'Cash on Delivery'),
-    ('Bank Transfer', 'Bank Transfer'),
-    ('Zelle Payment', 'Zelle Payment')
+    ('cash_on_delivery', 'Cash On Delivery'),
+    ('bank_transfer', 'Bank Transfer'),
+    ('zelle_payment', 'Zelle Payment')
 )
 
 
@@ -38,6 +38,8 @@ class Order(models.Model):
     payment_method = models.CharField(max_length=150, choices=PAYMENT_METHOD)
 
     shipping_charge = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    tax_amount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    
     status = models.CharField(max_length=250, choices=ORDER_STATUS, default='Placed')
 
     paid = models.BooleanField(default=False)
