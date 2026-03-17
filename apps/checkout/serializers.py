@@ -133,7 +133,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             product = item.product
 
             # Optional stock check
-            if product.quantity < item.quantity:
+            if product.quantity < item.product_quantity:
                 raise serializers.ValidationError(
                     f"{product.title} is out of stock"
                 )
@@ -141,14 +141,14 @@ class CheckoutSerializer(serializers.ModelSerializer):
             OrderItem.objects.create(
                 order=order,
                 product=product,
-                quantity=item.quantity,
+                quantity=item.product_quantity,
                 price=product.price,  # lock price
                 dosage_strength=product.dosage_strength,
                 dosage_unit=product.dosage_unit,
             )
 
             # Deduct stock
-            product.quantity -= item.quantity
+            product.quantity -= item.product_quantity
             if product.quantity == 0:
                 product.in_stock = False
             product.save()

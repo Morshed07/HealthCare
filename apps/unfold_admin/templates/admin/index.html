@@ -13,14 +13,14 @@
     }
 
     /* Total removal of the Unfold top bar */
-    header, #header-inner, .z-40.border-b.mb-6.px-4 {
+    {% comment %} header, #header-inner, .z-40.border-b.mb-6.px-4 {
         display: none !important;
-    }
+    } {% endcomment %}
 
     /* Add some spacing since the header is gone */
-    .dashboard-container {
+    {% comment %} .dashboard-container {
         padding-top: 2rem;
-    }
+    } {% endcomment %}
 </style>
 
 <div class="flex flex-col gap-8 px-6 pb-10 dashboard-container">

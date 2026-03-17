@@ -8,9 +8,9 @@ def add_to_cart(cart, product, quantity=1):
     )
 
     if not created:
-        item.quantity += quantity
+        item.product_quantity += quantity
     else:
-        item.quantity = quantity
+        item.product_quantity = quantity
 
     item.save()
     return item
@@ -20,7 +20,7 @@ def update_cart_item(cart_item, quantity):
     if quantity <= 0:
         cart_item.delete()
     else:
-        cart_item.quantity = quantity
+        cart_item.product_quantity = quantity
         cart_item.save()
 
 
