@@ -40,3 +40,13 @@ class Product(BaseModel):
         db_table = 'products'
 
         
+        
+class AdditionalDescription(BaseModel):
+    product = models.ForeignKey(Product, related_name='additional_descriptions', on_delete = models.CASCADE)
+    # description_title  = models.CharField(max_length=255, null=True, blank=True)
+    description_content = models.CharField(max_length=255, null=True, blank=True)
+    
+    
+    def __str__(self):
+        return self.description_content
+    

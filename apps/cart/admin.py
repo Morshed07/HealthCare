@@ -14,7 +14,7 @@ class CartAdmin(ModelAdmin):
 
 
 class CartItemAdmin(ModelAdmin):
-    list_display = ("cart", "product", "quantity", "unit_price")
+    list_display = ("cart", "product", "product_quantity", "unit_price")
     readonly_fields = ("unit_price",)
 
 
