@@ -2,7 +2,8 @@ from django.contrib import admin
 from unfold.admin import ModelAdmin
 from .models import (
     Cart,
-    CartItem
+    CartItem,
+    Coupon
 )
 
 
@@ -18,5 +19,11 @@ class CartItemAdmin(ModelAdmin):
     readonly_fields = ("unit_price",)
 
 
+class CouponAdmin(ModelAdmin):
+    list_display = ("code", "discount_amount", "active")
+    list_filter = ("active",)
+
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
+admin.site.register(Coupon, CouponAdmin)
+

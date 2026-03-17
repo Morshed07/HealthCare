@@ -39,6 +39,7 @@ class Order(models.Model):
 
     shipping_charge = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     tax_amount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    coupon_code = models.CharField(max_length=50, null=True, blank=True)
     
     status = models.CharField(max_length=250, choices=ORDER_STATUS, default='Placed')
 

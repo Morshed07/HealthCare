@@ -1,6 +1,12 @@
 from rest_framework import serializers
-from .models import Cart, CartItem
+from .models import Cart, CartItem, Coupon
 from apps.product.models import Product
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = ["id", "code", "discount_amount", "active"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -43,7 +49,9 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
+    coupon = CouponSerializer(read_only=True)
     subtotal = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
+    coupon_discount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     tax_amount = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     total = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     total_items = serializers.IntegerField(read_only=True)
@@ -54,6 +62,8 @@ class CartSerializer(serializers.ModelSerializer):
             "id",
             "items",
             "subtotal",
+            "coupon",
+            "coupon_discount",
             "tax_percentage",
             "tax_amount",
             "total",
@@ -68,3 +78,20 @@ class CartUpdateSerializer(serializers.ModelSerializer):
         fields = [
             "liability_waiver_accepted"
         ]
+
+
+class ApplyCouponSerializer(serializers.Serializer):
+    coupon_code = serializers.CharField(max_length=50, required=True)
+
+    def validate_coupon_code(self, value):
+        try:
+            coupon = Coupon.objects.get(code=value, active=True)
+        except Coupon.DoesNotExist:
+            raise serializers.ValidationError("Invalid or inactive coupon code")
+        return coupon
+
+    def save(self, cart):
+        coupon = self.validated_data['coupon_code']
+        cart.coupon = coupon
+        cart.save()
+        return cart

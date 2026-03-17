@@ -311,6 +311,11 @@ UNFOLD = {
                         "icon": "shopping_basket",
                         "link": reverse_lazy("admin:cart_cartitem_changelist"),
                     },
+                    {
+                        "title": "Coupons",
+                        "icon": "local_offer",
+                        "link": reverse_lazy("admin:cart_coupon_changelist"),
+                    }
                 ],
             },
             {

@@ -3,7 +3,7 @@ from django.db import transaction
 from decimal import Decimal
 
 from .models import Order, OrderItem, OrderStatusHistory
-from apps.cart.models import Cart
+from apps.cart.models import Cart, Coupon
 
 
 class OrderHistorySerializer(serializers.ModelSerializer):
@@ -52,6 +52,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "sub_total",
             "total",
             "tax_amount",
+            "coupon_code",
             "status",
             'created_at',
             'updated_at',
@@ -74,6 +75,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class CheckoutSerializer(serializers.ModelSerializer):
+    coupon_code = serializers.CharField(max_length=50, required=False, allow_blank=True)
 
     class Meta:
         model = Order
@@ -88,7 +90,18 @@ class CheckoutSerializer(serializers.ModelSerializer):
             "zip_code",
             "payment_method",
             "shipping_charge",
+            "coupon_code",
         ]
+
+    def validate_coupon_code(self, value):
+        if not value:
+            return value
+        
+        try:
+            coupon = Coupon.objects.get(code=value, active=True)
+            return value
+        except Coupon.DoesNotExist:
+            raise serializers.ValidationError("Invalid or inactive coupon code")
 
     def validate(self, attrs):
         user = self.context["request"].user
@@ -112,6 +125,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         cart = user.cart
+        coupon_code = validated_data.pop("coupon_code", None)
 
         # --------- CALCULATE FROM CART ---------
         subtotal = cart.subtotal
@@ -124,6 +138,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             sub_total=subtotal,
             total=total,
             tax_amount=tax,
+            coupon_code=coupon_code,
             **validated_data
         )
 
@@ -155,6 +170,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
 
         # --------- CLEAR CART ---------
         cart.items.all().delete()
+        cart.coupon = None
         cart.liability_waiver_accepted = False
         cart.save()
 

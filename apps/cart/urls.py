@@ -5,7 +5,9 @@ from .views import (
     UpdateCartItemView,
     RemoveCartItemView,
     ClearCartView,
-    CartWaiverUpdateView
+    CartWaiverUpdateView,
+    ApplyCouponView,
+    RemoveCouponView
 )
 
 urlpatterns = [
@@ -14,5 +16,7 @@ urlpatterns = [
     path("update/<str:item_id>/", UpdateCartItemView.as_view(), name="update-cart-item"),
     path("remove/<str:item_id>/", RemoveCartItemView.as_view(), name="remove-cart-item"),
     path("clear/", ClearCartView.as_view(), name="clear-cart"),
-    path("waiver-update/", CartWaiverUpdateView.as_view(), name="cart-waiver-update")
+    path("waiver-update/", CartWaiverUpdateView.as_view(), name="cart-waiver-update"),
+    path("apply-coupon/", ApplyCouponView.as_view(), name="apply-coupon"),
+    path("remove-coupon/", RemoveCouponView.as_view(), name="remove-coupon")
 ]
