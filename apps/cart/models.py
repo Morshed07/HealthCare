@@ -17,6 +17,13 @@ class Cart(BaseModel):
         decimal_places=2,
         default=Decimal("09.25")
     )
+    coupon = models.ForeignKey(
+        'Coupon',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="carts"
+    )
     liability_waiver_accepted = models.BooleanField(default=False)
 
     def __str__(self):
@@ -35,12 +42,20 @@ class Cart(BaseModel):
         return result["total"] or Decimal("0.00")
 
     @property
+    def coupon_discount(self):
+        if self.coupon and self.coupon.active:
+            return self.coupon.discount_amount
+        return Decimal("0.00")
+
+    @property
     def tax_amount(self):
-        return (self.subtotal * self.tax_percentage) / Decimal("100")
+        # Calculate tax on subtotal minus coupon discount
+        taxable_amount = self.subtotal - self.coupon_discount
+        return (taxable_amount * self.tax_percentage) / Decimal("100")
 
     @property
     def total(self):
-        return self.subtotal + self.tax_amount
+        return self.subtotal - self.coupon_discount + self.tax_amount
 
     @property
     def total_items(self):
@@ -74,3 +89,12 @@ class CartItem(BaseModel):
     @property
     def total_price(self):
         return self.product.price * self.product_quantity
+
+
+class Coupon(BaseModel):
+    code = models.CharField(max_length=50, unique=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.code

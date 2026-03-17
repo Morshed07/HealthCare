@@ -6,7 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from .models import Cart, CartItem
-from .serializers import CartSerializer, CartUpdateSerializer
+from .serializers import CartSerializer, CartUpdateSerializer, ApplyCouponSerializer
+from .services import apply_coupon_to_cart, remove_coupon_from_cart
 from apps.product.models import Product
 
 
@@ -42,9 +43,9 @@ class AddToCartView(APIView):
         )
 
         if not created:
-            item.quantity += quantity
+            item.product_quantity += quantity
         else:
-            item.quantity = quantity
+            item.product_quantity = quantity
 
         item.save()
 
@@ -68,7 +69,7 @@ class UpdateCartItemView(APIView):
             item.delete()
             return Response({"message": "Item removed"})
 
-        item.quantity = quantity
+        item.product_quantity = quantity
         item.save()
 
         return Response({"message": "Cart updated"})
@@ -113,3 +114,39 @@ class CartWaiverUpdateView(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApplyCouponView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        cart = request.user.cart
+        serializer = ApplyCouponSerializer(data=request.data)
+
+        if serializer.is_valid():
+            cart = serializer.save(cart)
+            return Response(
+                {
+                    "message": "Coupon applied successfully",
+                    "cart": CartSerializer(cart).data
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RemoveCouponView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        cart = request.user.cart
+        remove_coupon_from_cart(cart)
+        
+        return Response(
+            {
+                "message": "Coupon removed successfully",
+                "cart": CartSerializer(cart).data
+            },
+            status=status.HTTP_200_OK
+        )
