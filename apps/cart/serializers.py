@@ -6,7 +6,7 @@ from apps.product.models import Product
 class CouponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coupon
-        fields = ["id", "code", "discount_amount", "active"]
+        fields = ["id", "code", "discount_percentage", "active"]
 
 
 class ProductSerializer(serializers.ModelSerializer):

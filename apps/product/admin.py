@@ -1,12 +1,19 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Product, AdditionalDescription
+from .models import Product, AdditionalDescription, Pdf
 
 
 class AdditionalDescriptionInline(TabularInline):
     model = AdditionalDescription
     extra = 1
     fields = ("description_content", "created_at", "updated_at")
+    readonly_fields = ("created_at", "updated_at")
+
+
+class PdfInline(TabularInline):
+    model = Pdf
+    extra = 1
+    fields = ("pdf_file", "created_at", "updated_at")
     readonly_fields = ("created_at", "updated_at")
 
 
@@ -26,7 +33,7 @@ class ProductAdmin(ModelAdmin):
     list_per_page = 10
     prepopulated_fields = {"slug": ("title",)}
 
-    inlines = [AdditionalDescriptionInline]
+    inlines = [AdditionalDescriptionInline, PdfInline]
 
     fieldsets = (
         (
@@ -41,7 +48,6 @@ class ProductAdmin(ModelAdmin):
                     "dosage_unit",
                     "price",
                     "quantity",
-                    "information_pdf",
                     "in_stock",
                 )
             },

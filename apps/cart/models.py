@@ -44,11 +44,14 @@ class Cart(BaseModel):
     @property
     def coupon_discount(self):
         if self.coupon and self.coupon.active:
-            return self.coupon.discount_amount
+            return (self.subtotal * self.coupon.discount_percentage) / Decimal("100")
         return Decimal("0.00")
 
     @property
     def tax_amount(self):
+        # No tax if total items >= 15
+        if self.total_items >= 15:
+            return Decimal("0.00")
         # Calculate tax on subtotal minus coupon discount
         taxable_amount = self.subtotal - self.coupon_discount
         return (taxable_amount * self.tax_percentage) / Decimal("100")
@@ -93,7 +96,7 @@ class CartItem(BaseModel):
 
 class Coupon(BaseModel):
     code = models.CharField(max_length=50, unique=True)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)
     active = models.BooleanField(default=True)
 
     def __str__(self):

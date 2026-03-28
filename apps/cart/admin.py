@@ -20,7 +20,7 @@ class CartItemAdmin(ModelAdmin):
 
 
 class CouponAdmin(ModelAdmin):
-    list_display = ("code", "discount_amount", "active")
+    list_display = ("code", "discount_percentage", "active")
     list_filter = ("active",)
 
 admin.site.register(Cart, CartAdmin)
