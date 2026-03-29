@@ -2,6 +2,28 @@ from rest_framework import serializers
 from .models import Product
 
 
+class ProductListSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Product
+        fields = [
+            "id",
+            "title",
+            "slug",
+            "short_description",
+            "dosage_strength",
+            "dosage_unit",
+            "price",
+            "thumbnail",
+            "quantity",
+            "in_stock",
+            "created_at",
+            "updated_at"
+        ]
+
+        read_only_fields = ("id", "created_at", "updated_at")
+
+
 class ProductSerializer(serializers.ModelSerializer):
     additional_descriptions = serializers.SerializerMethodField()
     pdfs = serializers.SerializerMethodField()
@@ -41,9 +63,11 @@ class ProductSerializer(serializers.ModelSerializer):
     
     def get_pdfs(self, obj):
         pdfs = obj.pdfs.all()
+        request = self.context.get('request')
+        
         return [
             {
-                "pdf_file": pdf.pdf_file.url if pdf.pdf_file else None
+                "pdf_file": request.build_absolute_uri(pdf.pdf_file.url) if pdf.pdf_file else None
             }
             for pdf in pdfs
         ]
