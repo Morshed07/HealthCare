@@ -48,6 +48,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "state",
             "zip_code",
             "payment_method",
+            "coupon_discount",
             "shipping_charge",
             "sub_total",
             "total",
@@ -91,6 +92,8 @@ class CheckoutSerializer(serializers.ModelSerializer):
             "payment_method",
             "shipping_charge",
             "coupon_code",
+            "coupon_discount"
+
         ]
 
     def validate_coupon_code(self, value):
@@ -129,6 +132,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
 
         # --------- CALCULATE FROM CART ---------
         subtotal = cart.subtotal
+        coupon_discount = cart.coupon_discount
         tax = cart.tax_amount
         total = cart.total + validated_data.get("shipping_charge", Decimal("0.00"))
 
@@ -138,6 +142,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             sub_total=subtotal,
             total=total,
             tax_amount=tax,
+            coupon_discount=coupon_discount,
             coupon_code=coupon_code,
             **validated_data
         )
