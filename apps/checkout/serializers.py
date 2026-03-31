@@ -60,7 +60,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'updated_at',
             "orderitems",
             "order_history",
-            "representative_name"
+            "representative_name",
+            "representative_code"
         ]
         read_only_fields = (
             "order_id",
@@ -147,6 +148,13 @@ class CheckoutSerializer(serializers.ModelSerializer):
         except Representative.DoesNotExist:
             pass
 
+        representative_code = user.representative_code if user.representative_code else None
+        # try:
+        #     representative = Representative.objects.get(representative_code=representative_code)
+        #     representative_code = representative.representative_code
+        # except Representative.DoesNotExist:
+        #     representative_code = None
+
         # --------- CREATE ORDER ---------
         order = Order.objects.create(
             user=user,
@@ -156,6 +164,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             coupon_discount=coupon_discount,
             coupon_code=coupon_code,
             representative_name=representative_name,
+            representative_code=representative_code,
             **validated_data
         )
 
