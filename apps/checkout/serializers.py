@@ -4,6 +4,7 @@ from decimal import Decimal
 
 from .models import Order, OrderItem, OrderStatusHistory
 from apps.cart.models import Cart, Coupon
+from apps.representative.models import Representative
 
 
 class OrderHistorySerializer(serializers.ModelSerializer):
@@ -58,7 +59,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
             "orderitems",
-            "order_history"
+            "order_history",
+            "representative_name"
         ]
         read_only_fields = (
             "order_id",
@@ -136,6 +138,15 @@ class CheckoutSerializer(serializers.ModelSerializer):
         tax = cart.tax_amount
         total = cart.total + validated_data.get("shipping_charge", Decimal("0.00"))
 
+        # --------- GET REPRESENTATIVE NAME ---------
+        representative_name = None
+        try:
+            if user.representative_code:
+                representative = Representative.objects.get(representative_code=user.representative_code)
+                representative_name = representative.name
+        except Representative.DoesNotExist:
+            pass
+
         # --------- CREATE ORDER ---------
         order = Order.objects.create(
             user=user,
@@ -144,6 +155,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             tax_amount=tax,
             coupon_discount=coupon_discount,
             coupon_code=coupon_code,
+            representative_name=representative_name,
             **validated_data
         )
 

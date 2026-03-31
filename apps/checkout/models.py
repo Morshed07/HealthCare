@@ -36,8 +36,9 @@ class Order(models.Model):
     state = models.CharField(max_length=150, blank=True, null=True)
     zip_code = models.CharField(max_length=150, blank=True, null=True)
     payment_method = models.CharField(max_length=150, choices=PAYMENT_METHOD)
+    representative_name = models.CharField(max_length=250, blank=True, null=True)
+    
     coupon_discount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
-
     shipping_charge = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     tax_amount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     coupon_code = models.CharField(max_length=50, null=True, blank=True)
