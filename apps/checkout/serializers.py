@@ -139,21 +139,22 @@ class CheckoutSerializer(serializers.ModelSerializer):
         tax = cart.tax_amount
         total = cart.total + validated_data.get("shipping_charge", Decimal("0.00"))
 
-        # --------- GET REPRESENTATIVE NAME ---------
+        # --------- GET REPRESENTATIVE NAME & CODE ---------
         representative_name = None
-        try:
-            if user.representative_code:
-                representative = Representative.objects.get(representative_code=user.representative_code)
-                representative_name = representative.name
-        except Representative.DoesNotExist:
-            pass
-
-        representative_code = user.representative_code if user.representative_code else None
-        # try:
-        #     representative = Representative.objects.get(representative_code=representative_code)
-        #     representative_code = representative.representative_code
-        # except Representative.DoesNotExist:
-        #     representative_code = None
+        representative_code = None
+        
+        if user.representative_code:
+            try:
+                representative = Representative.objects.filter(
+                    representative_code=user.representative_code
+                ).first()
+                
+                if representative:
+                    representative_name = representative.name
+                    representative_code = representative.representative_code
+            except Exception:
+                # Silently handle any errors, proceed without representative info
+                pass
 
         # --------- CREATE ORDER ---------
         order = Order.objects.create(
