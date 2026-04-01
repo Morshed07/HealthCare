@@ -1,9 +1,10 @@
-from django.db import models
+from django.db import models, transaction
 from apps.core.models import BaseModel
 from decimal import Decimal
 import datetime
 from apps.product.models import Product
 from django.contrib.auth import get_user_model
+import uuid
 
 User = get_user_model()
 
@@ -58,11 +59,26 @@ class Order(models.Model):
         verbose_name_plural = 'Orders'
 
     def save(self, *args, **kwargs):
-        # 1. Generate Custom Order ID (e.g., ORD-2024-0001)
+        # 1. Generate Custom Order ID (thread-safe with atomic transaction)
         if not self.order_id:
-            year = datetime.date.today().year
-            order_count = Order.objects.filter(created_at__year=year).count() + 1
-            self.order_id = f"ORD-{year}-{str(order_count).zfill(4)}"
+            with transaction.atomic():
+                year = datetime.date.today().year
+                # Use select_for_update to lock and ensure unique order_id
+                last_order = Order.objects.select_for_update().filter(
+                    created_at__year=year
+                ).order_by('-created_at').first()
+                
+                if last_order and last_order.order_id:
+                    try:
+                        # Extract counter from last order (e.g., ORD-2026-0001 -> 1)
+                        counter = int(last_order.order_id.split('-')[-1])
+                        order_count = counter + 1
+                    except (ValueError, IndexError):
+                        order_count = Order.objects.filter(created_at__year=year).count() + 1
+                else:
+                    order_count = Order.objects.filter(created_at__year=year).count() + 1
+                
+                self.order_id = f"ORD-{year}-{str(order_count).zfill(4)}"
 
         # # 2. Track Status History
         # if self.pk:
