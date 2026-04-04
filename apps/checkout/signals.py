@@ -12,6 +12,11 @@ def create_order_status_history(sender, instance, created, **kwargs):
             order=instance,
             status=instance.status
         )
+
+        # Send order confirmation email via Celery
+        from apps.checkout.tasks import send_order_confirmation_email
+        send_order_confirmation_email.delay(instance.order_id)
+
     else:
         # Check if status changed
         last_status = (

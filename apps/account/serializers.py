@@ -168,6 +168,14 @@ class VerifyOTPSerializer(serializers.Serializer):
         # CLEAR THE OTP HERE
         otp_obj.delete()
 
+        # Send welcome email via Celery
+        from apps.account.tasks import send_welcome_email_task
+        send_welcome_email_task.delay(
+            user_email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name
+        )
+
         return attrs
 
 

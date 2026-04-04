@@ -214,6 +214,22 @@ DEFAULT_FROM_EMAIL = env(
 
 
 # =======================
+# Celery Configuration
+# =======================
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6380/0")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://127.0.0.1:6380/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_EXPIRES = 3600  # Results expire after 1 hour
+CELERY_TASK_TRACK_STARTED = True
+CELERY_WORKER_POOL = "solo"
+CELERY_TASK_ALWAYS_EAGER = False
+
+
+# =======================
 # Jwt Configuration
 # =======================
 

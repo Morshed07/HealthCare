@@ -1,12 +1,10 @@
-from django.conf import settings
-from django.core.mail import EmailMessage
 from django.forms import ValidationError
-from django.template.loader import render_to_string
 from .models import (
     User,
     EmailOTP
 )
 from rest_framework_simplejwt.tokens import RefreshToken
+from .tasks import send_otp_email_task
 
 
 def get_tokens_for_user(user):
@@ -20,7 +18,8 @@ def get_tokens_for_user(user):
 def _send_otp_email(user: User, subject: str):
     """
     Generic function to send OTP emails with resend rate limiting.
-    Gets or creates OTP, checks rate limit, generates OTP, and sends email.
+    Gets or creates OTP, checks rate limit, generates OTP,
+    and sends email asynchronously via Celery.
     """
     otp_obj, created = EmailOTP.objects.get_or_create(user=user)
     
@@ -31,19 +30,13 @@ def _send_otp_email(user: User, subject: str):
     # Generate new OTP (this also saves it)
     otp_obj.generate_otp()
     
-    html_message = render_to_string(
-        'email/otp_email.html',
-        {'otp': otp_obj.otp, 'user': user}
+    # Send email asynchronously via Celery
+    send_otp_email_task.delay(
+        user_email=user.email,
+        user_first_name=user.first_name,
+        otp=otp_obj.otp,
+        subject=subject
     )
-    
-    email = EmailMessage(
-        subject=subject,
-        body=html_message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        to=[user.email]
-    )
-    email.content_subtype = 'html'
-    return email.send()
 
 
 def send_registration_otp_email(user: User):
@@ -54,5 +47,3 @@ def send_registration_otp_email(user: User):
 def send_forgot_password_otp_email(user: User):
     """Send OTP email for password reset"""
     return _send_otp_email(user, subject='You requested a password reset OTP')
-
-
