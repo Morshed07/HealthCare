@@ -22,6 +22,7 @@ class RepresentativeSerializer(serializers.ModelSerializer):
             "name",
             "email",
             "phone_number",
+            "avatar",
             "company",
             "designation",
             "representative_code",
@@ -31,7 +32,7 @@ class RepresentativeSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    representative = RepresentativeSerializer(read_only=True)
+    representative = serializers.SerializerMethodField()
     shipping_address = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,17 +42,36 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "avatar",
+            "mobile_number",
             "representative",
+            "representative_code",
+            "department",
+            "job_title",
             "is_verified",
             "is_active",
-            "shipping_address"
+            "shipping_address",
+            "created_at"
         )
-        read_only_fields = ("id", "is_verified")
+        read_only_fields = ("id", "is_verified", "created_at")
 
     def get_shipping_address(self, obj):
         shipping_address = ShippingAddress.objects.filter(user=obj).first()
         if shipping_address:
             return ShippingAddressSerializer(shipping_address).data
+        return None
+    
+
+    def get_representative(self, obj):
+        if obj.representative_code:
+            representative = Representative.objects.filter(
+                representative_code=obj.representative_code
+            ).first()
+            if representative:
+                return RepresentativeSerializer(
+                    representative,
+                    context=self.context
+                ).data
         return None
 
 
@@ -109,7 +129,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             is_verified=False,
             is_active=False
         )
-        send_registration_otp_email(user)
+        try:
+            send_registration_otp_email(user)
+        except ValidationError as e:
+            # If OTP sending fails, we still want to return the user
+            # The frontend can handle retry logic
+            pass
         return user
 
 
@@ -142,6 +167,14 @@ class VerifyOTPSerializer(serializers.Serializer):
 
         # CLEAR THE OTP HERE
         otp_obj.delete()
+
+        # Send welcome email via Celery
+        from apps.account.tasks import send_welcome_email_task
+        send_welcome_email_task.delay(
+            user_email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name
+        )
 
         return attrs
 

@@ -1,6 +1,8 @@
 from pathlib import Path
 import environ
 from datetime import timedelta
+from django.urls import reverse_lazy
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,12 +37,17 @@ CORS_ALLOWED_ORIGINS = env(
 ).split(',')
 
 
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "ngrok-skip-browser-warning",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 # Application definition
 
 INSTALLED_APPS = [
     "apps.unfold_admin",
     'unfold',
-    # 'apps.unfold_admin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -69,6 +76,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # whitenoise for serving static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -97,7 +105,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'reactides.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -168,9 +175,9 @@ STORAGES = {
     },
 }
 
-# =========================
+# ==============================
 # Rest Framework Configuration
-# =========================
+# ==============================
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -207,6 +214,22 @@ DEFAULT_FROM_EMAIL = env(
 
 
 # =======================
+# Celery Configuration
+# =======================
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://127.0.0.1:6380/0")
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="redis://127.0.0.1:6380/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_RESULT_EXPIRES = 3600  # Results expire after 1 hour
+CELERY_TASK_TRACK_STARTED = True
+CELERY_WORKER_POOL = "solo"
+CELERY_TASK_ALWAYS_EAGER = False
+
+
+# =======================
 # Jwt Configuration
 # =======================
 
@@ -216,24 +239,11 @@ SIMPLE_JWT = {
 }
 
 
-
-
 # =======================
 # Unfold Configuration
 # =======================
-from django.templatetags.static import static
-from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
 
 UNFOLD = {
-    # 'APP_NAME': 'Reactides',
-    # 'APP_VERSION': '1.0.0',
-    # 'APP_LOGO_URL': static('images/logo.png'),
-    # 'APP_FAVICON_URL': static('images/favicon.ico'),
-    # 'APP_DESCRIPTION': _('A modern e-commerce platform built with Django and React.'),
-    # 'APP_AUTHOR': _('Morshed Nayeem'),
-    # 'APP_AUTHOR_EMAIL': env("AUTHOR_EMAIL", default="morshed.nayeem@example.com")
-    
     "SITE_TITLE": "Reactides Admin",
     "SITE_HEADER": "Reactides",
     "SITE_SUBHEADER": "Admin Dashboard",
@@ -317,6 +327,11 @@ UNFOLD = {
                         "icon": "shopping_basket",
                         "link": reverse_lazy("admin:cart_cartitem_changelist"),
                     },
+                    {
+                        "title": "Coupons",
+                        "icon": "local_offer",
+                        "link": reverse_lazy("admin:cart_coupon_changelist"),
+                    }
                 ],
             },
             {
@@ -345,7 +360,7 @@ UNFOLD = {
             "300": "110 213 197",
             "400": "63 186 168",
             "500": "34 158 142",
-            "600": "8 120 112",   # <--- Your exact color (#087870)
+            "600": "8 120 112",  
             "700": "12 96 90",
             "800": "13 77 73",
             "900": "14 64 61",

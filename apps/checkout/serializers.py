@@ -3,7 +3,8 @@ from django.db import transaction
 from decimal import Decimal
 
 from .models import Order, OrderItem, OrderStatusHistory
-from apps.cart.models import Cart
+from apps.cart.models import Cart, Coupon
+from apps.representative.models import Representative
 
 
 class OrderHistorySerializer(serializers.ModelSerializer):
@@ -48,14 +49,19 @@ class OrderSerializer(serializers.ModelSerializer):
             "state",
             "zip_code",
             "payment_method",
+            "coupon_discount",
             "shipping_charge",
             "sub_total",
             "total",
+            "tax_amount",
+            "coupon_code",
             "status",
             'created_at',
             'updated_at',
             "orderitems",
-            "order_history"
+            "order_history",
+            "representative_name",
+            "representative_code"
         ]
         read_only_fields = (
             "order_id",
@@ -73,6 +79,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 class CheckoutSerializer(serializers.ModelSerializer):
+    coupon_code = serializers.CharField(max_length=50, required=False, allow_blank=True)
 
     class Meta:
         model = Order
@@ -87,7 +94,20 @@ class CheckoutSerializer(serializers.ModelSerializer):
             "zip_code",
             "payment_method",
             "shipping_charge",
+            "coupon_code",
+            "coupon_discount"
+
         ]
+
+    def validate_coupon_code(self, value):
+        if not value:
+            return value
+        
+        try:
+            coupon = Coupon.objects.get(code=value, active=True)
+            return value
+        except Coupon.DoesNotExist:
+            raise serializers.ValidationError("Invalid or inactive coupon code")
 
     def validate(self, attrs):
         user = self.context["request"].user
@@ -111,17 +131,41 @@ class CheckoutSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         cart = user.cart
+        coupon_code = validated_data.pop("coupon_code", None)
 
         # --------- CALCULATE FROM CART ---------
         subtotal = cart.subtotal
+        coupon_discount = cart.coupon_discount
         tax = cart.tax_amount
         total = cart.total + validated_data.get("shipping_charge", Decimal("0.00"))
+
+        # --------- GET REPRESENTATIVE NAME & CODE ---------
+        representative_name = None
+        representative_code = None
+        
+        if user.representative_code:
+            try:
+                representative = Representative.objects.filter(
+                    representative_code=user.representative_code
+                ).first()
+                
+                if representative:
+                    representative_name = representative.name
+                    representative_code = representative.representative_code
+            except Exception:
+                # Silently handle any errors, proceed without representative info
+                pass
 
         # --------- CREATE ORDER ---------
         order = Order.objects.create(
             user=user,
             sub_total=subtotal,
             total=total,
+            tax_amount=tax,
+            coupon_discount=coupon_discount,
+            coupon_code=coupon_code,
+            representative_name=representative_name,
+            representative_code=representative_code,
             **validated_data
         )
 
@@ -131,7 +175,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
             product = item.product
 
             # Optional stock check
-            if product.quantity < item.quantity:
+            if product.quantity < item.product_quantity:
                 raise serializers.ValidationError(
                     f"{product.title} is out of stock"
                 )
@@ -139,20 +183,21 @@ class CheckoutSerializer(serializers.ModelSerializer):
             OrderItem.objects.create(
                 order=order,
                 product=product,
-                quantity=item.quantity,
+                quantity=item.product_quantity,
                 price=product.price,  # lock price
                 dosage_strength=product.dosage_strength,
                 dosage_unit=product.dosage_unit,
             )
 
             # Deduct stock
-            product.quantity -= item.quantity
+            product.quantity -= item.product_quantity
             if product.quantity == 0:
                 product.in_stock = False
             product.save()
 
         # --------- CLEAR CART ---------
         cart.items.all().delete()
+        cart.coupon = None
         cart.liability_waiver_accepted = False
         cart.save()
 

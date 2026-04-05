@@ -1,9 +1,10 @@
-from django.db import models
+from django.db import models, transaction
 from apps.core.models import BaseModel
 from decimal import Decimal
 import datetime
 from apps.product.models import Product
 from django.contrib.auth import get_user_model
+import uuid
 
 User = get_user_model()
 
@@ -17,9 +18,9 @@ ORDER_STATUS = (
 )
 
 PAYMENT_METHOD = (
-    ('Cash on Delivery', 'Cash on Delivery'),
-    ('Bank Transfer', 'Bank Transfer'),
-    ('Zelle Payment', 'Zelle Payment')
+    ('cash_on_delivery', 'Cash On Delivery'),
+    ('bank_transfer', 'Bank Transfer'),
+    ('zelle_payment', 'Zelle Payment')
 )
 
 
@@ -36,8 +37,14 @@ class Order(models.Model):
     state = models.CharField(max_length=150, blank=True, null=True)
     zip_code = models.CharField(max_length=150, blank=True, null=True)
     payment_method = models.CharField(max_length=150, choices=PAYMENT_METHOD)
+    representative_name = models.CharField(max_length=250, blank=True, null=True)
+    representative_code = models.CharField(max_length=50, blank=True, null=True)
 
+    coupon_discount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
     shipping_charge = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    tax_amount = models.DecimalField(default=0, max_digits=10, decimal_places=2)
+    coupon_code = models.CharField(max_length=50, null=True, blank=True)
+    
     status = models.CharField(max_length=250, choices=ORDER_STATUS, default='Placed')
 
     paid = models.BooleanField(default=False)
@@ -52,11 +59,26 @@ class Order(models.Model):
         verbose_name_plural = 'Orders'
 
     def save(self, *args, **kwargs):
-        # 1. Generate Custom Order ID (e.g., ORD-2024-0001)
+        # 1. Generate Custom Order ID (thread-safe with atomic transaction)
         if not self.order_id:
-            year = datetime.date.today().year
-            order_count = Order.objects.filter(created_at__year=year).count() + 1
-            self.order_id = f"ORD-{year}-{str(order_count).zfill(4)}"
+            with transaction.atomic():
+                year = datetime.date.today().year
+                # Use select_for_update to lock and ensure unique order_id
+                last_order = Order.objects.select_for_update().filter(
+                    created_at__year=year
+                ).order_by('-created_at').first()
+                
+                if last_order and last_order.order_id:
+                    try:
+                        # Extract counter from last order (e.g., ORD-2026-0001 -> 1)
+                        counter = int(last_order.order_id.split('-')[-1])
+                        order_count = counter + 1
+                    except (ValueError, IndexError):
+                        order_count = Order.objects.filter(created_at__year=year).count() + 1
+                else:
+                    order_count = Order.objects.filter(created_at__year=year).count() + 1
+                
+                self.order_id = f"ORD-{year}-{str(order_count).zfill(4)}"
 
         # # 2. Track Status History
         # if self.pk:

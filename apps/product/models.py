@@ -20,6 +20,7 @@ class Product(BaseModel):
     thumbnail = models.ImageField(upload_to='products/', blank=True, null=True)
     quantity = models.PositiveIntegerField(default=0)
     in_stock = models.BooleanField(default=True)
+    # information_pdf = models.FileField(upload_to='product_info_pdfs/', blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -38,4 +39,19 @@ class Product(BaseModel):
 
         db_table = 'products'
 
-        
+
+class AdditionalDescription(BaseModel):
+    product = models.ForeignKey(Product, related_name='additional_descriptions', on_delete = models.CASCADE)
+    # description_title  = models.CharField(max_length=255, null=True, blank=True)
+    description_content = models.CharField(max_length=255, null=True, blank=True)
+    
+    def __str__(self):
+        return self.description_content
+    
+
+class Pdf(BaseModel):
+    product = models.ForeignKey(Product, related_name='pdfs', on_delete = models.CASCADE)
+    pdf_file = models.FileField(upload_to='product_pdfs/', blank=True, null=True)
+    
+    def __str__(self):
+        return f'File for {self.product.title}-{self.pdf_file.name}'

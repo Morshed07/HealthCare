@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Reactides</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f6f8; padding: 40px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0d605a, #229e8e); padding: 40px; text-align: center;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">
+                🎉 Welcome to Reactides!
+              </h1>
+              <p style="margin: 10px 0 0; color: #a3e8dc; font-size: 15px;">
+                Your account has been verified successfully
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 36px 40px;">
+
+              <p style="margin: 0 0 20px; font-size: 16px; color: #333333;">
+                Hi <strong>{{ first_name }}</strong>,
+              </p>
+
+              <p style="margin: 0 0 24px; font-size: 15px; color: #555555; line-height: 1.7;">
+                Thank you for verifying your email address. Your account is now fully activated and ready to use.
+              </p>
+
+              <!-- Account Details Card -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0fbf9; border-radius: 10px; margin-bottom: 28px;">
+                <tr>
+                  <td style="padding: 24px;">
+                    <h3 style="margin: 0 0 16px; font-size: 15px; color: #0d605a; font-weight: 600;">Account Details</h3>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #777;">Name</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #222; text-align: right; font-weight: 600;">{{ first_name }} {{ last_name }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #777;">Email</td>
+                        <td style="padding: 6px 0; font-size: 14px; color: #222; text-align: right;">{{ email }}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 6px 0; font-size: 14px; color: #777;">Status</td>
+                        <td style="padding: 6px 0; text-align: right;">
+                          <span style="background-color: #d1f4ed; color: #0c605a; padding: 3px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
+                            Verified ✓
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0 0 28px; font-size: 15px; color: #555555; line-height: 1.7;">
+                You can now log in and start placing orders. If you have any questions, feel free to reach out to our support team.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f9fafb; padding: 24px 40px; text-align: center; border-top: 1px solid #eee;">
+              <p style="margin: 0 0 6px; font-size: 13px; color: #999;">
+                If you did not create this account, please contact our support team immediately.
+              </p>
+              <p style="margin: 0; font-size: 12px; color: #bbb;">
+                &copy; {{ year }} Reactides. All rights reserved.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
