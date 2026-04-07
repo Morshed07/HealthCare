@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'apps.product',
     'apps.cart',
     'apps.checkout',
+    'apps.notification'
 
 
 ]
@@ -347,6 +348,17 @@ UNFOLD = {
                         "title": "Order Items",
                         "icon": "list_alt",
                         "link": reverse_lazy("admin:checkout_orderitem_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Notification",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Alerts",
+                        "icon": "notifications",
+                        "link": reverse_lazy("admin:notification_alert_changelist"),
                     },
                 ],
             },
