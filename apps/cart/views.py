@@ -6,8 +6,17 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from .models import Cart, CartItem
-from .serializers import CartSerializer, CartUpdateSerializer, ApplyCouponSerializer
-from .services import apply_coupon_to_cart, remove_coupon_from_cart
+from .serializers import (
+    CartSerializer,
+    CartUpdateSerializer,
+    ApplyCouponSerializer,
+    ApplyShippingCouponSerializer,
+)
+from .services import (
+    apply_coupon_to_cart,
+    remove_coupon_from_cart,
+    remove_shipping_coupon_from_cart,
+)
 from apps.product.models import Product
 
 
@@ -142,7 +151,7 @@ class RemoveCouponView(APIView):
     def delete(self, request):
         cart = request.user.cart
         remove_coupon_from_cart(cart)
-        
+
         return Response(
             {
                 "message": "Coupon removed successfully",
@@ -150,3 +159,44 @@ class RemoveCouponView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+
+class ApplyShippingCouponView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        cart = request.user.cart
+        serializer = ApplyShippingCouponSerializer(
+            data=request.data
+        )
+
+        if serializer.is_valid():
+            cart = serializer.save(cart)
+            return Response(
+                {
+                    "message": "Shipping coupon applied",
+                    "cart": CartSerializer(cart).data
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class RemoveShippingCouponView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        cart = request.user.cart
+        remove_shipping_coupon_from_cart(cart)
+
+        return Response(
+            {
+                "message": "Shipping coupon removed",
+                "cart": CartSerializer(cart).data
+            },
+            status=status.HTTP_200_OK
+        )

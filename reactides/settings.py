@@ -332,7 +332,12 @@ UNFOLD = {
                         "title": "Coupons",
                         "icon": "local_offer",
                         "link": reverse_lazy("admin:cart_coupon_changelist"),
-                    }
+                    },
+                    {
+                        "title": "Shipping Coupons",
+                        "icon": "local_offer",
+                        "link": reverse_lazy("admin:cart_shippingcoupon_changelist"),
+                    },
                 ],
             },
             {
@@ -351,17 +356,17 @@ UNFOLD = {
                     },
                 ],
             },
-            {
-                "title": "Notification",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Alerts",
-                        "icon": "notifications",
-                        "link": reverse_lazy("admin:notification_alert_changelist"),
-                    },
-                ],
-            },
+            # {
+            #     "title": "Notification",
+            #     "separator": True,
+            #     "items": [
+            #         {
+            #             "title": "Alerts",
+            #             "icon": "notifications",
+            #             "link": reverse_lazy("admin:notification_alert_changelist"),
+            #         },
+            #     ],
+            # },
         ],
     },
     "COLORS": {

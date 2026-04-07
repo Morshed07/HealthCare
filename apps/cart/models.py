@@ -7,6 +7,8 @@ from apps.product.models import Product
 
 
 class Cart(BaseModel):
+    SHIPPING_FEE = Decimal("25.00")
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -19,6 +21,13 @@ class Cart(BaseModel):
     )
     coupon = models.ForeignKey(
         'Coupon',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="carts"
+    )
+    shipping_coupon = models.ForeignKey(
+        'ShippingCoupon',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -57,8 +66,18 @@ class Cart(BaseModel):
         return (taxable_amount * self.tax_percentage) / Decimal("100")
 
     @property
+    def shipping_fee(self):
+        return self.SHIPPING_FEE
+
+    @property
+    def shipping_discount(self):
+        if self.shipping_coupon and self.shipping_coupon.active:
+            return min(self.shipping_coupon.discount_amount, self.shipping_fee)
+        return Decimal("0.00")
+
+    @property
     def total(self):
-        return self.subtotal - self.coupon_discount + self.tax_amount
+        return self.subtotal - self.coupon_discount + self.tax_amount + self.shipping_fee - self.shipping_discount
 
     @property
     def total_items(self):
@@ -101,3 +120,12 @@ class Coupon(BaseModel):
 
     def __str__(self):
         return self.code
+
+
+class ShippingCoupon(BaseModel):
+    code = models.CharField(max_length=50, unique=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.code} (${self.discount_amount} off shipping)"

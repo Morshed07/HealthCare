@@ -6,6 +6,8 @@ from .models import Order, OrderItem, OrderStatusHistory
 from apps.cart.models import Cart, Coupon
 from apps.representative.models import Representative
 
+SHIPPING_FEE = Decimal("25.00")
+
 
 class OrderHistorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -51,10 +53,12 @@ class OrderSerializer(serializers.ModelSerializer):
             "payment_method",
             "coupon_discount",
             "shipping_charge",
+            "shipping_discount",
             "sub_total",
             "total",
             "tax_amount",
             "coupon_code",
+            "shipping_coupon_code",
             "status",
             'created_at',
             'updated_at',
@@ -93,10 +97,8 @@ class CheckoutSerializer(serializers.ModelSerializer):
             "state",
             "zip_code",
             "payment_method",
-            "shipping_charge",
             "coupon_code",
-            "coupon_discount"
-
+            "coupon_discount",
         ]
 
     def validate_coupon_code(self, value):
@@ -137,23 +139,37 @@ class CheckoutSerializer(serializers.ModelSerializer):
         subtotal = cart.subtotal
         coupon_discount = cart.coupon_discount
         tax = cart.tax_amount
-        total = cart.total + validated_data.get("shipping_charge", Decimal("0.00"))
+        shipping_charge = SHIPPING_FEE
+        shipping_discount = cart.shipping_discount
+        total = (
+            subtotal
+            - coupon_discount
+            + tax
+            + shipping_charge
+            - shipping_discount
+        )
+
+        # --------- SHIPPING COUPON CODE ---------
+        shipping_coupon_code = None
+        if cart.shipping_coupon:
+            shipping_coupon_code = cart.shipping_coupon.code
 
         # --------- GET REPRESENTATIVE NAME & CODE ---------
         representative_name = None
         representative_code = None
-        
+
         if user.representative_code:
             try:
                 representative = Representative.objects.filter(
                     representative_code=user.representative_code
                 ).first()
-                
+
                 if representative:
                     representative_name = representative.name
-                    representative_code = representative.representative_code
+                    representative_code = (
+                        representative.representative_code
+                    )
             except Exception:
-                # Silently handle any errors, proceed without representative info
                 pass
 
         # --------- CREATE ORDER ---------
@@ -164,6 +180,9 @@ class CheckoutSerializer(serializers.ModelSerializer):
             tax_amount=tax,
             coupon_discount=coupon_discount,
             coupon_code=coupon_code,
+            shipping_charge=shipping_charge,
+            shipping_discount=shipping_discount,
+            shipping_coupon_code=shipping_coupon_code,
             representative_name=representative_name,
             representative_code=representative_code,
             **validated_data
@@ -184,7 +203,7 @@ class CheckoutSerializer(serializers.ModelSerializer):
                 order=order,
                 product=product,
                 quantity=item.product_quantity,
-                price=product.price,  # lock price
+                price=product.price,
                 dosage_strength=product.dosage_strength,
                 dosage_unit=product.dosage_unit,
             )
@@ -198,7 +217,8 @@ class CheckoutSerializer(serializers.ModelSerializer):
         # --------- CLEAR CART ---------
         cart.items.all().delete()
         cart.coupon = None
+        cart.shipping_coupon = None
         cart.liability_waiver_accepted = False
         cart.save()
 
-        return order
+        return order
