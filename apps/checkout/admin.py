@@ -17,7 +17,12 @@ class OrderItemInline(TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(ModelAdmin):
-    list_display = ("order_id", "user", "facility_name", "total", "coupon_code", 'representative_name', 'representative_code', "status", "created_at")
+    list_display = (
+        "order_id", "user", "facility_name",
+        "total", "coupon_code", "shipping_coupon_code",
+        "representative_name", "representative_code",
+        "status", "created_at",
+    )
     search_fields = ("order_id", "user__username", "facility_name")
     list_filter = ("status", "created_at")
     readonly_fields = ("order_id", "created_at", "updated_at")

@@ -3,7 +3,8 @@ from unfold.admin import ModelAdmin
 from .models import (
     Cart,
     CartItem,
-    Coupon
+    Coupon,
+    ShippingCoupon,
 )
 
 
@@ -23,7 +24,13 @@ class CouponAdmin(ModelAdmin):
     list_display = ("code", "discount_percentage", "active")
     list_filter = ("active",)
 
+
+class ShippingCouponAdmin(ModelAdmin):
+    list_display = ("code", "discount_amount", "active")
+    list_filter = ("active",)
+
+
 admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
 admin.site.register(Coupon, CouponAdmin)
-
+admin.site.register(ShippingCoupon, ShippingCouponAdmin)
