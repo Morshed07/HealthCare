@@ -21,6 +21,9 @@ urlpatterns = [
     path("waiver-update/", CartWaiverUpdateView.as_view(), name="cart-waiver-update"),
     path("apply-coupon/", ApplyCouponView.as_view(), name="apply-coupon"),
     path("remove-coupon/", RemoveCouponView.as_view(), name="remove-coupon"),
+    #apply shipping coupon
     path("apply-shipping-coupon/", ApplyShippingCouponView.as_view(), name="apply-shipping-coupon"),
+    #remove shipping coupon
     path("remove-shipping-coupon/", RemoveShippingCouponView.as_view(), name="remove-shipping-coupon"),
 ]
+
