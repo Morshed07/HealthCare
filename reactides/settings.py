@@ -356,17 +356,17 @@ UNFOLD = {
                     },
                 ],
             },
-            # {
-            #     "title": "Notification",
-            #     "separator": True,
-            #     "items": [
-            #         {
-            #             "title": "Alerts",
-            #             "icon": "notifications",
-            #             "link": reverse_lazy("admin:notification_alert_changelist"),
-            #         },
-            #     ],
-            # },
+            {
+                "title": "Notification",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Alerts",
+                        "icon": "notifications",
+                        "link": reverse_lazy("admin:notification_alert_changelist"),
+                    },
+                ],
+            },
         ],
     },
     "COLORS": {

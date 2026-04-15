@@ -13,7 +13,7 @@ from .serializers import (
     ApplyShippingCouponSerializer,
 )
 from .services import (
-    apply_coupon_to_cart,
+    # apply_coupon_to_cart,
     remove_coupon_from_cart,
     remove_shipping_coupon_from_cart,
 )
@@ -199,4 +199,4 @@ class RemoveShippingCouponView(APIView):
                 "cart": CartSerializer(cart).data
             },
             status=status.HTTP_200_OK
-        )
+        )
