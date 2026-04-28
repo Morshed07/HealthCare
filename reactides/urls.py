@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/checkout/', include('apps.checkout.urls')),
     path('api/service/', include('apps.service.urls')),
     path('api/doctor/', include('apps.doctor.urls')),
+    path('api/consultation-type/', include('apps.consultation_type.urls')),
     path('api/appointment/', include('apps.appointment.urls')),
 
 
