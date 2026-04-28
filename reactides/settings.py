@@ -71,7 +71,10 @@ INSTALLED_APPS = [
     'apps.product',
     'apps.cart',
     'apps.checkout',
-    'apps.notification'
+    'apps.notification',
+    'apps.service',
+    'apps.doctor',
+    'apps.appointment',
 
 
 ]
@@ -367,6 +370,39 @@ UNFOLD = {
                     },
                 ],
             },
+            {
+                "title": "Service",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Services",
+                        "icon": "event",
+                        "link": reverse_lazy("admin:service_service_changelist"),
+                    },
+                ],
+            },
+            {
+                "title": "Doctor",
+                "separator": True,
+                "items": [
+                    {
+                        "title": "Doctors",
+                        "icon": "local_hospital",
+                        "link": reverse_lazy("admin:doctor_doctor_changelist"),
+                    },
+                ],
+            },
+            # {
+            #     "title" : "Appointment",
+            #     "separator": True,
+            #     "items": [
+            #         {
+            #             "title": "Appointments",
+            #             "icon": "event",
+            #             "link": reverse_lazy("admin:appointment_appointment_changelist"),
+            #         },
+            #     ],
+            # }
         ],
     },
     "COLORS": {
