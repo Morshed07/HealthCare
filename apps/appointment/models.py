@@ -72,3 +72,15 @@ class Appointment(BaseModel):
     @classmethod
     def get_unique_appointment_times(cls, doctor_id):
         return cls.objects.filter(doctor_id=doctor_id).values_list('appointment_time', flat=True).distinct()
+
+
+class AppointmentStatusHistory(BaseModel):
+    appointment = models.ForeignKey(Appointment, on_delete=models.CASCADE, related_name='status_history')
+    status = models.CharField(max_length=250, choices=Appointment.STATUS_CHOICES)
+    updated_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['updated_at']
+
+    def __str__(self):
+        return f"Appointment {self.appointment.id} changed to {self.status}"

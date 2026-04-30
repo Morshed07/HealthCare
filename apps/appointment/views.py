@@ -1,8 +1,8 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Appointment
-from .serializers import AppointmentSerializer
+from .models import Appointment, AppointmentStatusHistory
+from .serializers import AppointmentSerializer, AppointmentStatusHistorySerializer
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -35,3 +35,14 @@ class AppointmentViewSet(viewsets.ModelViewSet):
         return Response({
             "booked_slots": [dt.isoformat() for dt in booked_times]
         })
+        
+    
+class AppointmentStatusHistoryViewSet(viewsets.ModelViewSet):
+    queryset = AppointmentStatusHistory.objects.all()
+    serializer_class = AppointmentStatusHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Optional: Filter appointments by the email/phone if provided in query params
+        queryset = AppointmentStatusHistory.objects.all()
+        return queryset
