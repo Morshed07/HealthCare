@@ -58,8 +58,12 @@ class Appointment(BaseModel):
         ]
 
     def __str__(self):
-        return f"Appointment between {self.doctor.user.name} and {self.first_name + ' ' + self.last_name} on {self.appointment_time.strftime('%Y-%m-%d %H:%M')}"
+        return f"Appointment between {self.doctor.name} and {self.first_name + ' ' + self.last_name} on {self.appointment_time.strftime('%Y-%m-%d %H:%M')}"
 
+    def save(self, *args, **kwargs):
+        self.amount = self.consultation_type.fee
+        super().save(*args, **kwargs)
+    
     @classmethod
     def get_pending_appointments(cls):
         return cls.objects.filter(status='pending')

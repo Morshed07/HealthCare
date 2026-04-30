@@ -390,11 +390,11 @@ UNFOLD = {
                         "icon": "local_hospital",
                         "link": reverse_lazy("admin:doctor_doctor_changelist"),
                     },
-                    # {
-                    #     "title": "Appointments",
-                    #     "icon": "event",
-                    #     "link": reverse_lazy("admin:appointment_appointment_changelist"),
-                    # },
+                    {
+                        "title": "Appointments",
+                        "icon": "event",
+                        "link": reverse_lazy("admin:appointment_appointment_changelist"),
+                    },
                 ],
             },
         ],

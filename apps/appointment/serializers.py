@@ -1,11 +1,42 @@
 from rest_framework import serializers
 from .models import Appointment
 
+
 class AppointmentSerializer(serializers.ModelSerializer):
+    amount = serializers.SerializerMethodField()
+    
     class Meta:
         model = Appointment
-        fields = '__all__'
-        read_only_fields = ['status', 'is_paid', 'amount']
+        fields = [
+            'id',
+            'doctor',
+            'service',
+            'consultation_type',
+            'appointment_time',
+            'first_name',
+            'last_name',
+            'email',
+            'phone',
+            'reason_for_visit',
+            'current_medications',
+            'known_allergies',
+            'medical_history',
+            'date_of_birth',
+            'state',
+            'biological_sex',
+            'payment_method',
+            'amount',
+            'status',
+            'is_paid',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = [
+            'status', 'is_paid', 'amount', 'created_at', 'updated_at'
+        ]
+
+    def get_amount(self, obj):
+        return obj.consultation_type.fee
 
     def validate(self, data):
         doctor = data.get('doctor')
