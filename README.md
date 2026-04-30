@@ -1,93 +1,369 @@
-# Backend
+# Reactides Healthcare Ecosystem 🏥
 
+A complete healthcare ecosystem platform built with Django, designed to simplify healthcare services through doctor appointment booking, online medicine purchasing, and integrated healthcare service management.
 
+Reactides combines healthcare consultation, appointment scheduling, and medicine e-commerce into one scalable digital platform.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+# 🚀 Features
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- 👨‍⚕️ Doctor Appointment Booking
+- 💊 Online Medicine Ordering
+- 🛒 Shopping Cart & Checkout System
+- 📅 Appointment Scheduling
+- 📧 OTP Email Verification
+- 🔐 JWT Authentication
+- 👥 User & Representative Management
+- 🎟 Coupon & Discount System
+- 🚚 Shipping Management
+- 📦 Order Tracking
+- 📜 Prescription Support
+- 🧾 Order & Appointment Status History
+- ⚡ REST API with Django REST Framework
+- 📨 Asynchronous Email Sending with Celery
 
-## Add your files
+---
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+# 🏗 Tech Stack
 
+| Technology | Usage |
+|---|---|
+| Python | Backend Language |
+| Django | Web Framework |
+| Django REST Framework | API Development |
+| PostgreSQL | Database |
+| Redis | Celery Broker & Caching |
+| Celery | Background Tasks & Email Queue |
+| JWT | Authentication |
+| Gunicorn | Production Server |
+| Nginx | Reverse Proxy |
+
+---
+
+# 📦 Core Modules
+
+## 👤 Authentication System
+
+Features:
+- User Registration
+- Email OTP Verification
+- Login & JWT Authentication
+- User Roles & Permissions
+- Representative Accounts
+
+Main Entities:
+- `account_user`
+- `account_emailotp`
+- `auth_group`
+- `auth_permission`
+
+---
+
+## 👨‍⚕️ Doctor Appointment Module
+
+Users can:
+- Book appointments with doctors
+- Choose consultation types
+- Select appointment schedules
+- Track appointment statuses
+
+Features:
+- Medical history support
+- Current medication tracking
+- Allergy information
+- Appointment history logs
+- Payment status tracking
+
+Main Entities:
+- `appointment_appointment`
+- `appointment_appointmentstatushistory`
+- `doctor_doctor`
+- `consultation_type_consultationtype`
+
+---
+
+## 💊 Medicine E-Commerce System
+
+Features:
+- Medicine listing
+- Product details & dosage information
+- Shopping cart system
+- Coupon & shipping discounts
+- Order placement
+- Order item tracking
+
+Main Entities:
+- `products`
+- `cart_cart`
+- `cart_cartitem`
+- `checkout_order`
+- `checkout_orderitem`
+
+---
+
+## 🛒 Cart & Checkout System
+
+Includes:
+- Dynamic cart management
+- Shipping calculations
+- Tax calculations
+- Coupon discounts
+- Payment method support
+
+Features:
+- Order subtotal & totals
+- Shipping discounts
+- Representative referral tracking
+
+---
+
+## 📦 Order Management
+
+Users can:
+- Place medicine orders
+- Track order statuses
+- View purchase history
+- Manage shipping addresses
+
+Main Entities:
+- `checkout_order`
+- `checkout_orderstatushistory`
+- `account_shippingaddress`
+
+---
+
+## 📧 Celery Email Queue System
+
+Reactides uses Celery for asynchronous background tasks such as:
+
+- OTP email sending
+- Appointment confirmation emails
+- Order confirmation emails
+- Notification emails
+
+Benefits:
+- Faster API responses
+- Reliable email delivery
+- Background task processing
+- Improved scalability
+
+---
+
+# 🗄 Database Architecture
+
+The backend system includes:
+
+- Users & Authentication
+- Doctors
+- Appointments
+- Consultation Types
+- Medicines & Products
+- Shopping Cart
+- Orders & Checkout
+- Coupons & Discounts
+- Representatives
+
+---
+
+# 📊 ER Diagram
+
+Below is the complete backend database ER diagram:
+
+![Reactides ER Diagram](./Reactides.png)
+
+---
+
+# ⚙️ Installation
+
+## 1️⃣ Clone Repository
+
+```bash
+git clone https://github.com/yourusername/reactides-backend.git
+
+cd reactides-backend
 ```
-cd existing_repo
-git remote add origin https://gitlab.betopialimited.com/join-venture-ai/suemehta/backend.git
-git branch -M main
-git push -uf origin main
+
+---
+
+## 2️⃣ Create Virtual Environment
+
+```bash
+python -m venv venv
 ```
 
-## Integrate with your tools
+### Activate Environment
 
-- [ ] [Set up project integrations](https://gitlab.betopialimited.com/join-venture-ai/suemehta/backend/-/settings/integrations)
+#### Linux / macOS
 
-## Collaborate with your team
+```bash
+source venv/bin/activate
+```
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+#### Windows
 
-## Test and Deploy
+```bash
+venv\Scripts\activate
+```
 
-Use the built-in continuous integration in GitLab.
+---
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## 3️⃣ Install Dependencies
 
-***
+```bash
+pip install -r requirements.txt
+```
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# 🔑 Environment Variables
 
-## Suggestions for a good README
+Create `.env`
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```env
+DEBUG=True
 
-## Name
-Choose a self-explaining name for your project.
+SECRET_KEY=your_secret_key
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+ALLOWED_HOSTS=*
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+DATABASE_URL=postgresql://postgres:password@localhost:5432/reactides
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+REDIS_URL=redis://127.0.0.1:6379
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+JWT_SECRET_KEY=your_jwt_secret
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your_email
+EMAIL_HOST_PASSWORD=your_password
+EMAIL_USE_TLS=True
+```
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+---
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# 🛠 Run Migrations
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+```bash
+python manage.py migrate
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+---
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+# 👤 Create Superuser
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+```bash
+python manage.py createsuperuser
+```
 
-## License
-For open source projects, say how it is licensed.
+---
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+# ▶️ Run Development Server
+
+```bash
+python manage.py runserver
+```
+
+---
+
+# ⚡ Run Celery Worker
+
+```bash
+celery -A config worker -l info
+```
+
+---
+
+# 🔥 Start Redis
+
+```bash
+redis-server
+```
+
+---
+
+# 📡 Example API Routes
+
+```http
+/api/auth/
+/api/doctors/
+/api/appointments/
+/api/products/
+/api/cart/
+/api/orders/
+/api/coupons/
+```
+
+---
+
+# 🔐 Authentication
+
+Reactides uses JWT Authentication.
+
+Example:
+
+```http
+Authorization: Bearer <token>
+```
+
+---
+
+# 📁 File Management
+
+Used for:
+
+- Product images
+- Medical PDFs
+- User avatars
+- Prescription files
+
+---
+
+# 🚀 Recommended Production Stack
+
+- Ubuntu VPS
+- Nginx
+- Gunicorn
+- PostgreSQL
+- Redis
+- Celery
+- Supervisor
+
+---
+
+# 🧪 Future Improvements
+
+- Video Consultation
+- AI Health Assistance
+- Online Prescription Upload
+- Mobile Applications
+- Live Doctor Chat
+- Multi-vendor Pharmacy System
+
+---
+
+# 🤝 Contributing
+
+Pull requests are welcome.
+
+Steps:
+
+1. Fork repository
+2. Create feature branch
+3. Commit changes
+4. Push branch
+5. Open Pull Request
+
+---
+
+# 📄 License
+
+MIT License
+
+---
+
+# 👨‍💻 Developed By
+
+Reactides Healthcare Team
+
+Built with ❤️ using Django, DRF, PostgreSQL, Celery, and scalable backend technologies.
