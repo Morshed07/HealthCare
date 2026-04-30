@@ -13,6 +13,7 @@ class Service(BaseModel):
         help_text="Products associated with this service",
         blank=True
     )
+    lab_recommended = models.BooleanField(default=False, help_text="Lab recommended")
 
     def __str__(self):
         return self.title

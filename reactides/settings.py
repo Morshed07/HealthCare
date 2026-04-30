@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'apps.notification',
     'apps.service',
     'apps.doctor',
+    'apps.consultation_type',
     'apps.appointment',
 
 
@@ -371,7 +372,7 @@ UNFOLD = {
                 ],
             },
             {
-                "title": "Service",
+                "title": "Service & Appointment",
                 "separator": True,
                 "items": [
                     {
@@ -379,30 +380,23 @@ UNFOLD = {
                         "icon": "event",
                         "link": reverse_lazy("admin:service_service_changelist"),
                     },
-                ],
-            },
-            {
-                "title": "Doctor",
-                "separator": True,
-                "items": [
+                    {
+                        "title": "Consultation Types",
+                        "icon": "event",
+                        "link": reverse_lazy("admin:consultation_type_consultationtype_changelist"),
+                    },
                     {
                         "title": "Doctors",
                         "icon": "local_hospital",
                         "link": reverse_lazy("admin:doctor_doctor_changelist"),
                     },
+                    {
+                        "title": "Appointments",
+                        "icon": "event",
+                        "link": reverse_lazy("admin:appointment_appointment_changelist"),
+                    },
                 ],
             },
-            # {
-            #     "title" : "Appointment",
-            #     "separator": True,
-            #     "items": [
-            #         {
-            #             "title": "Appointments",
-            #             "icon": "event",
-            #             "link": reverse_lazy("admin:appointment_appointment_changelist"),
-            #         },
-            #     ],
-            # }
         ],
     },
     "COLORS": {

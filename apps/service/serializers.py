@@ -20,5 +20,7 @@ class ServiceSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'title',
-            'products'
+            'description',
+            'products',
+            'lab_recommended'
         ]
