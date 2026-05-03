@@ -45,7 +45,7 @@ htmlcov/
 db.sqlite3
 /media
 /static_collected # Or whatever your STATIC_ROOT is set to
-/staticfiles # Common alternative for static_collected
+/staticfiles
 
 # IDEs and Editors
 .idea/
