@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     'apps.doctor',
     'apps.consultation_type',
     'apps.appointment',
+    'apps.data',
 
 
 ]
@@ -372,31 +373,49 @@ UNFOLD = {
                 ],
             },
             {
-                "title": "Service & Appointment",
+                "title": "Service & Consultations",
                 "separator": True,
                 "items": [
                     {
                         "title": "Services",
-                        "icon": "event",
+                        "icon": "local_offer",
                         "link": reverse_lazy("admin:service_service_changelist"),
                     },
                     {
                         "title": "Consultation Types",
-                        "icon": "event",
+                        "icon": "calendar_clock",
                         "link": reverse_lazy("admin:consultation_type_consultationtype_changelist"),
-                    },
-                    {
-                        "title": "Doctors",
-                        "icon": "local_hospital",
-                        "link": reverse_lazy("admin:doctor_doctor_changelist"),
-                    },
-                    {
-                        "title": "Appointments",
-                        "icon": "event",
-                        "link": reverse_lazy("admin:appointment_appointment_changelist"),
                     },
                 ],
             },
+            {
+                "title" : "Doctor",
+                "separator" : True,
+                "items" : [
+                    {
+                        "title" : "Doctors",
+                        "icon" : "person",
+                        "link" : reverse_lazy("admin:doctor_doctor_changelist"),
+                    }
+                ]
+            },
+            {
+                "title" : "Appointment & Regenerative Data",
+                "separator" : True,
+                "items" : [
+                    {
+                        "title" : "Appointments",
+                        "icon" : "calendar_month",
+                        "link" : reverse_lazy("admin:appointment_appointment_changelist"),
+                    },
+                    {
+                        "title" : "Regenerative Data",
+                        "icon" : "assessment",
+                        "link" : reverse_lazy("admin:data_intakedata_changelist"),
+                    }
+                ]
+            },
+        
         ],
     },
     "COLORS": {
@@ -414,46 +433,4 @@ UNFOLD = {
             "950": "4 38 36",
         },
     },
-    #     "primary": {
-    #             "50": "238 242 255",
-    #             "100": "224 231 255",
-    #             "200": "199 210 254",
-    #             "300": "165 180 252",
-    #             "400": "129 140 248",
-    #             "500": "99 102 241",
-    #             "600": "79 70 229",  # Base Indigo
-    #             "700": "67 56 202",
-    #             "800": "55 48 163",
-    #             "900": "49 46 129",
-    #             "950": "30 27 75",
-    #         },
-    # },
-    #     "primary": {
-    #             "50": "245 243 255",
-    #             "100": "237 233 254",
-    #             "200": "221 214 254",
-    #             "300": "196 181 253",
-    #             "400": "167 139 250",
-    #             "500": "139 92 246",  # Base Violet
-    #             "600": "124 58 237",
-    #             "700": "109 40 217",
-    #             "800": "91 33 182",
-    #             "900": "76 29 149",
-    #             "950": "46 16 101",
-    #         },
-    # }
-        # "primary": {
-        #         "50": "255 247 237",
-        #         "100": "255 237 213",
-        #         "200": "254 215 170",
-        #         "300": "253 186 116",
-        #         "400": "251 146 60",
-        #         "500": "249 115 22",   # Base Orange
-        #         "600": "234 88 12",
-        #         "700": "194 65 12",
-        #         "800": "154 52 18",
-        #         "900": "124 45 18",
-        #         "950": "67 20 7",
-        #     },
-        # },
 }
