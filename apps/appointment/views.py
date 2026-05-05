@@ -12,11 +12,10 @@ class AppointmentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Optional: Filter appointments by the email/phone if provided in query params
         queryset = Appointment.objects.all()
-        email = self.request.query_params.get('email')
-        if email:
-            queryset = queryset.filter(email=email)
+        appointment_id = self.request.query_params.get('id')
+        if appointment_id:
+            queryset = queryset.filter(id=appointment_id)
         return queryset
 
     @action(detail=False, methods=['get'], url_path='booked-slots/(?P<doctor_id>[^/.]+)')
@@ -36,7 +35,13 @@ class AppointmentViewSet(viewsets.ModelViewSet):
             "booked_slots": [dt.isoformat() for dt in booked_times]
         })
         
-    
+    @action(detail=True, methods=['get'], permission_classes=[], url_path='payment-info')
+    def payment_info(self, request, pk=None):
+        appointment = Appointment.objects.get(id=pk)
+        serializer = self.get_serializer(appointment)
+        return Response(serializer.data)
+
+
 class AppointmentStatusHistoryViewSet(viewsets.ModelViewSet):
     queryset = AppointmentStatusHistory.objects.all()
     serializer_class = AppointmentStatusHistorySerializer

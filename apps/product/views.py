@@ -21,7 +21,7 @@ class ProductPagination(PageNumberPagination):
 
 class ProductListView(APIView):
     def get(self, request):
-        products = Product.objects.all()
+        products = Product.objects.all().order_by('-created_at')
 
         paginator = ProductPagination()
         paginated_products = paginator.paginate_queryset(products, request)
