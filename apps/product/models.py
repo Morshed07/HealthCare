@@ -38,6 +38,8 @@ class Product(BaseModel):
         verbose_name_plural = 'Products'
 
         db_table = 'products'
+        
+        ordering = ['-created_at']
 
 
 class AdditionalDescription(BaseModel):

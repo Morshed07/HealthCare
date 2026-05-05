@@ -13,7 +13,7 @@ class Appointment(BaseModel):
         ('cancelled', 'Cancelled'),
         ('completed', 'Completed'),
     )
-    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments')
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE, related_name='appointments', null=True, blank=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, related_name='appointments')
     consultation_type = models.ForeignKey(ConsultationType, on_delete=models.CASCADE, related_name='appointments')
 
@@ -58,7 +58,7 @@ class Appointment(BaseModel):
         ]
 
     def __str__(self):
-        return f"Appointment between {self.doctor.name} and {self.first_name + ' ' + self.last_name} on {self.appointment_time.strftime('%Y-%m-%d %H:%M')}"
+        return f"Appointment between Dr.{self.doctor} and Patient-{self.first_name + ' ' + self.last_name} on {self.appointment_time.strftime('%Y-%m-%d %H:%M')}"
 
     def save(self, *args, **kwargs):
         self.amount = self.consultation_type.fee
