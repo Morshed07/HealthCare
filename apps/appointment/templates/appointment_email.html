@@ -38,7 +38,7 @@
 <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:16px;">
 <tr>
 <td width="32" valign="top">
-<div style="width:28px;height:28px;background-color:#e8ddd0;border-radius:6px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:28px;font-size:14px;">📅</div>
+<div style="width:28px;height:28px;background-color:#e8ddd0;border-radius:6px;text-align:center;line-height:28px;font-size:14px;">📅</div>
 </td>
 <td style="padding-left:12px;">
 <p style="margin:0;font-size:12px;color:#999;">Date & Time</p>
@@ -88,37 +88,80 @@
 </div>
  
               <!-- Payment -->
-<div style="border:2px solid #1B3252;border-radius:12px;padding:24px 28px;margin-bottom:24px;text-align:center;background-color:#ffffff;">
-<h3 style="margin:0 0 8px;font-size:16px;font-weight:700;color:#1B3252;">Complete Your Payment</h3>
-<p style="margin:0 0 20px;font-size:13px;color:#888;">To confirm your appointment, please complete the payment of {{fee}}</p>
-<a href="{{payment_link}}" style="display:inline-block;background-color:#C9A87C;color:#1B3252;text-decoration:none;font-size:15px;font-weight:700;padding:14px 40px;border-radius:8px;">
-                  Pay Now - {{fee}} &rarr;
-</a>
+<div style="border:2px solid #1B3252;border-radius:12px;padding:24px 28px;margin-bottom:24px;background-color:#ffffff;">
+ 
+                <!-- Title -->
+<h3 style="margin:0 0 8px;font-size:16px;font-weight:700;color:#1B3252;text-align:center;">Complete Your Payment</h3>
+<p style="margin:0 0 20px;font-size:13px;color:#888;text-align:center;">To confirm your appointment, please complete the payment of {{fee}}</p>
+ 
+                <!-- Pay Now (not a link) -->
+<div style="text-align:center;margin-bottom:24px;">
+<div style="display:inline-block;background-color:#C9A87C;color:#1B3252;font-size:15px;font-weight:700;padding:14px 40px;border-radius:8px;">
+                    Pay Now - {{fee}};
 </div>
+</div>
+ 
+                <!-- Divider -->
+<div style="border-top:1px solid #e5e7eb;margin-bottom:24px;"></div>
+ 
+                <!-- Bank Transfer -->
+<p style="margin:0 0 12px;font-size:14px;font-weight:700;color:#1B3252;">Bank Transfer Info</p>
+<table cellpadding="0" cellspacing="0" width="100%" style="background-color:#F5EFE6;border-radius:10px;margin-bottom:24px;">
+<tr>
+<td style="padding:16px 20px;">
+<table cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td width="50%" style="padding-bottom:12px;">
+<p style="margin:0;font-size:12px;color:#999;">Company</p>
+<p style="margin:3px 0 0;font-size:14px;font-weight:700;color:#1B3252;">Reactides LLC</p>
+</td>
+<td width="50%" style="padding-bottom:12px;">
+<p style="margin:0;font-size:12px;color:#999;">Routing Number</p>
+<p style="margin:3px 0 0;font-size:14px;font-weight:700;color:#1B3252;">322271627</p>
+</td>
+</tr>
+<tr>
+<td width="50%">
+<p style="margin:0;font-size:12px;color:#999;">Account Number</p>
+<p style="margin:3px 0 0;font-size:14px;font-weight:700;color:#1B3252;">2906727386</p>
+</td>
+<td width="50%">
+<p style="margin:0;font-size:12px;color:#999;">Address</p>
+<p style="margin:3px 0 0;font-size:14px;font-weight:700;color:#1B3252;">36 Shady Brook Lane,<br/>Lander WY 82520</p>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+ 
+                <!-- Divider -->
+<div style="border-top:1px solid #e5e7eb;margin-bottom:24px;"></div>
+ 
+                <!-- Zelle QR -->
+<div style="text-align:center;">
+<p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#1B3252;">Pay via Zelle</p>
+<p style="margin:0 0 16px;font-size:13px;color:#888;">Scan the QR code below to send your payment via Zelle</p>
+<img src="{{ zelle_qr_url }}" alt="Zelle QR Code" width="160" height="160" style="border-radius:10px;border:2px solid #e5e7eb;" />
+</div>
+ 
+              </div>
  
               <!-- How to Join -->
 <div style="background-color:#dde8f5;border-radius:12px;padding:24px 28px;margin-bottom:24px;">
 <h3 style="margin:0 0 16px;font-size:15px;font-weight:700;color:#1B3252;">How to Join Your Consultation</h3>
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-<td style="padding:4px 0;font-size:13px;color:#444;">
-&bull;&nbsp; Complete your payment using the button above
-</td>
+<td style="padding:4px 0;font-size:13px;color:#444;">&bull;&nbsp; Complete your payment using the button above</td>
 </tr>
 <tr>
-<td style="padding:4px 0;font-size:13px;color:#444;">
-&bull;&nbsp; You'll receive a confirmation email with a video call link
-</td>
+<td style="padding:4px 0;font-size:13px;color:#444;">&bull;&nbsp; You'll receive a confirmation email with a video call link</td>
 </tr>
 <tr>
-<td style="padding:4px 0;font-size:13px;color:#444;">
-&bull;&nbsp; Join the call 5 minutes before your scheduled time
-</td>
+<td style="padding:4px 0;font-size:13px;color:#444;">&bull;&nbsp; Join the call 5 minutes before your scheduled time</td>
 </tr>
 <tr>
-<td style="padding:4px 0;font-size:13px;color:#444;">
-&bull;&nbsp; Have your medical information and questions ready
-</td>
+<td style="padding:4px 0;font-size:13px;color:#444;">&bull;&nbsp; Have your medical information and questions ready</td>
 </tr>
 </table>
 </div>
@@ -136,7 +179,7 @@
           <!-- Footer -->
 <tr>
 <td style="background-color:#e8edf5;padding:20px 40px;text-align:center;">
-<p style="margin:0;font-size:12px;color:#999;">&copy; 2026 Reactides. All rights reserved.</p>
+<p style="margin:0;font-size:12px;color:#999;">&copy; <script>document.write(new Date().getFullYear())</script> Reactides. All rights reserved.</p>
 </td>
 </tr>
  

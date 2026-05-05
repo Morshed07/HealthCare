@@ -41,6 +41,7 @@ def send_appointment_confirmation_email(self, appointment_id):
         'fee': f"${appointment.amount:.2f}",
         'payment_link': f"{settings.FRONTEND_URL}/payment/{appointment.id}/",
         'year': datetime.now().year,
+        'zelle_qr_url': 'https://backend.reactides.com/media/Zelle-QR-Code.jpeg',
     }
 
     try:
