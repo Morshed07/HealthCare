@@ -3,6 +3,7 @@ from .models import Appointment, AppointmentStatusHistory
 from apps.data.models import IntakeData
 from apps.data.serializers import IntakeDataSerializer
 from apps.service.models import Service
+from .tasks import send_appointment_confirmation_email
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
@@ -45,6 +46,10 @@ class AppointmentSerializer(serializers.ModelSerializer):
         # Create intake form linked to the new appointment
         if intake_data:
             IntakeData.objects.create(appointment=appointment, **intake_data)
+        
+        # Send confirmation email asynchronously
+        if appointment.email:
+            send_appointment_confirmation_email.delay(appointment.id)
         
         return appointment
        

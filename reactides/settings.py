@@ -218,6 +218,10 @@ DEFAULT_FROM_EMAIL = env(
     default="noreply@reactides.com"
 )
 
+FRONTEND_URL = env(
+    "FRONTEND_URL",
+    default="http://localhost:3000"
+)
 
 # =======================
 # Celery Configuration
