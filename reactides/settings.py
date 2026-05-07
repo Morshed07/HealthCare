@@ -376,49 +376,49 @@ UNFOLD = {
                     },
                 ],
             },
-            {
-                "title": "Service & Consultations",
-                "separator": True,
-                "items": [
-                    {
-                        "title": "Services",
-                        "icon": "local_offer",
-                        "link": reverse_lazy("admin:service_service_changelist"),
-                    },
-                    {
-                        "title": "Consultation Types",
-                        "icon": "calendar_clock",
-                        "link": reverse_lazy("admin:consultation_type_consultationtype_changelist"),
-                    },
-                ],
-            },
-            {
-                "title" : "Doctor",
-                "separator" : True,
-                "items" : [
-                    {
-                        "title" : "Doctors",
-                        "icon" : "person",
-                        "link" : reverse_lazy("admin:doctor_doctor_changelist"),
-                    }
-                ]
-            },
-            {
-                "title" : "Appointment & Regenerative Data",
-                "separator" : True,
-                "items" : [
-                    {
-                        "title" : "Appointments",
-                        "icon" : "calendar_month",
-                        "link" : reverse_lazy("admin:appointment_appointment_changelist"),
-                    },
-                    {
-                        "title" : "Regenerative Data",
-                        "icon" : "assessment",
-                        "link" : reverse_lazy("admin:data_intakedata_changelist"),
-                    }
-                ]
-            },
+            # {
+            #     "title": "Service & Consultations",
+            #     "separator": True,
+            #     "items": [
+            #         {
+            #             "title": "Services",
+            #             "icon": "local_offer",
+            #             "link": reverse_lazy("admin:service_service_changelist"),
+            #         },
+            #         {
+            #             "title": "Consultation Types",
+            #             "icon": "calendar_clock",
+            #             "link": reverse_lazy("admin:consultation_type_consultationtype_changelist"),
+            #         },
+            #     ],
+            # },
+            # {
+            #     "title" : "Doctor",
+            #     "separator" : True,
+            #     "items" : [
+            #         {
+            #             "title" : "Doctors",
+            #             "icon" : "person",
+            #             "link" : reverse_lazy("admin:doctor_doctor_changelist"),
+            #         }
+            #     ]
+            # },
+            # {
+            #     "title" : "Appointment & Regenerative Data",
+            #     "separator" : True,
+            #     "items" : [
+            #         {
+            #             "title" : "Appointments",
+            #             "icon" : "calendar_month",
+            #             "link" : reverse_lazy("admin:appointment_appointment_changelist"),
+            #         },
+            #         {
+            #             "title" : "Regenerative Data",
+            #             "icon" : "assessment",
+            #             "link" : reverse_lazy("admin:data_intakedata_changelist"),
+            #         }
+            #     ]
+            # },
         
         ],
     },
