@@ -39,7 +39,7 @@ class Product(BaseModel):
 
         db_table = 'products'
         
-        ordering = ['-created_at']
+        ordering = ['title']
 
 
 class AdditionalDescription(BaseModel):
